@@ -1,13 +1,19 @@
 package com.umg.econo.serviceImpl;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.umg.econo.Utileria;
 import com.umg.econo.dao.ObtenerParametroGenerico;
+import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Producto;
@@ -26,6 +32,7 @@ public class ServiceWebImpl implements ServiceWeb{
 	
 	@Autowired private RegistroRepository registroRepository;
 	@Autowired private ProductosRepository productosRepository;
+	@Autowired private Utileria utileria;
 	@Override
 	public RespuestaParametroDao<Registro> getAllRegistros(ObtenerParametroGenerico<Registro> registro) {
 		RespuestaParametroDao<Registro> respuesta = new RespuestaParametroDao<Registro>();
@@ -140,6 +147,40 @@ public class ServiceWebImpl implements ServiceWeb{
 			logger.info("Registros no obtenidos");
 			
 		}
+		
+		return respuesta;
+	}
+	@Override
+	public List<Map> getConsulta(HttpServletRequest request, HttpServletResponse response) {
+		logger.info("opcion "+request.getParameter("opcion"));
+
+		String opcion = request.getParameter("opcion");
+		Long producto = null;
+		if (request.getParameter("producto") != null)
+		{
+			producto = Long.parseLong(request.getParameter("producto"));
+		}
+		String anio = request.getParameter("anio");
+		String mes = request.getParameter("mes");
+		Integer metodo = Integer.getInteger(request.getParameter("metodo"));
+		Float max = null;
+		Float min = null;
+		if(request.getParameter("max")!= null)
+		{
+			max =Float.parseFloat(request.getParameter("max"));
+		}
+		if(request.getParameter("min")!= null)
+		{
+			min =Float.parseFloat(request.getParameter("min"));
+		}
+		
+		List<Map> respuesta = registroRepository.findByParametrosAll();
+		logger.info("Recibio registros "+respuesta.size());
+		
+
+		
+		
+		
 		
 		return respuesta;
 	}
