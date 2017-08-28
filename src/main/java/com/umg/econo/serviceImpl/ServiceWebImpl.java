@@ -156,25 +156,30 @@ public class ServiceWebImpl implements ServiceWeb{
 
 		String opcion = request.getParameter("opcion");
 		Long producto = null;
-		if (request.getParameter("producto") != null)
+		if (!request.getParameter("producto").equals(""))
 		{
 			producto = Long.parseLong(request.getParameter("producto"));
 		}
 		String anio = request.getParameter("anio");
 		String mes = request.getParameter("mes");
 		Integer metodo = Integer.getInteger(request.getParameter("metodo"));
-		Float max = null;
-		Float min = null;
-		if(request.getParameter("max")!= null)
+		
+		List<Map> respuesta= null;
+		//VALIDACIONES SEGUN PARAMETROS
+		//SI ENVIA PRODUCTO
+		
+		if(producto != null)
 		{
-			max =Float.parseFloat(request.getParameter("max"));
+			logger.info("Producto "+producto);
+			respuesta = registroRepository.findByParametrosProducto(producto);
+			
 		}
-		if(request.getParameter("min")!= null)
-		{
-			min =Float.parseFloat(request.getParameter("min"));
+		else{
+			respuesta = registroRepository.findByParametrosAll();
 		}
 		
-		List<Map> respuesta = registroRepository.findByParametrosAll();
+		
+		 
 		logger.info("Recibio registros "+respuesta.size());
 		
 

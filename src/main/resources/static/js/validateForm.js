@@ -1,7 +1,5 @@
 jQuery(function($){
-	$.getScript(context+"/resources/js/jquery.validate.min.js",function(){
-		$.getScript(context+"/resources/js/additional-methods.js",function(){
-			$.getScript(context+"/resources/js/tooltipster.bundle.min.js",function(){
+	$.getScript("/js/jquery.validate.min.js",function(){
 				$(document).ready(function(){
 					
 					var msgRequiredGeneric = "Este campo es requerido";
@@ -14,17 +12,13 @@ jQuery(function($){
 					var msgMinlengthNumber = $.validator.format("Ingrese al menos {0} números");
 					var msgNumber = "Número no válido";
 					
-					$("input[name], select[name], span.fancyFiled", "#saveForm").tooltipster({ 
+					$("input[name], select[name], span.fancyFiled", "#formulario").tooltipster({ 
 						trigger: 'custom', // default is 'hover' which is no good here
 						onlyOne: false,    // allow multiple tips to be open at a time
 						position: 'right'  // display the tips to the right of the element
 				    });
 					
-					$("input[name], select[name], span.fancyFiled", "#updateForm").tooltipster({ 
-						trigger: 'custom', // default is 'hover' which is no good here
-						onlyOne: false,    // allow multiple tips to be open at a time
-						position: 'right'  // display the tips to the right of the element
-				    });
+					
 					$.validator.addMethod("phoneNumber", function(value, element){
 						return this.optional(element) || /^[0-9]{4,4}-[0-9]{4,4}$/.test(value);
 					});
@@ -54,55 +48,30 @@ jQuery(function($){
 						return this.optional( element ) || check;
 					});
 					
-					$("#saveForm").validate({
+					$("#formulario").validate({
 						rules : {
-							nombre : {
+							opcion : {
 								required : true,
-								maxlength: 100
 							},
-							telefono : {
+							producto : {
 								required : true,
-								phoneNumber : true
-							},
+								},
 							
-							correo : {
+							metodo : {
 								required : true,
-								email : true
 							},
-							extension : {
-								number : true,
-								minlength: 2,
-								maxlength: 10
-							},
-							usuario : {
-								required : true,
-								maxlength: 100
-							}
 						},
 						messages : {
-							nombre : {
+							opcion : {
 								required : msgRequiredGeneric,
-								maxlength: msgMaxlength
 							},
-							telefono : {
+							producto : {
 								required : msgRequiredGeneric,
-								phoneNumber : msgPhone
 							},
 							
-							correo : {
+							metodo : {
 								required : msgRequiredGeneric,
-								email : msgRequiredEmail
 							},
-							extension : {
-								required : msgRequiredGeneric,
-								number : msgNumber,
-								minlength: msgMinlengthNumber,
-								maxlength: msgMaxlengthNumber
-							},
-							usuario : {
-								required : msgRequiredGeneric,
-								maxlength: msgMaxlength
-							}
 						},
 						errorPlacement: function (error, element) {
 							if($(element).is("select")){
@@ -128,11 +97,11 @@ jQuery(function($){
 					                $(element).tooltipster("show");
 				            	}
 				            	
-				                $("input[name].error, select[name].error, span.fancyFiled", "#saveForm").focus(function(){
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formulario").focus(function(){
 									$(this).tooltipster("show");
 								});
 				                
-				                $("input[name].error, select[name].error, span.fancyFiled", "#saveForm").blur(function(){
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formulario").blur(function(){
 									$(this).tooltipster("hide");
 								});
 				            }
@@ -153,8 +122,10 @@ jQuery(function($){
 				        }
 					});
 					
-					$("#guardar").click(function(){
-						var formulario = $("#saveForm");
+					$("#enviar").click(function(){
+						var formulario = $("#formulario");
+						console.log("Producto"+$("#producto").val());
+						
 						if($(formulario).valid()){
 							$(formulario).submit();
 						}else{
@@ -162,117 +133,7 @@ jQuery(function($){
 						}
 					});
 					
-					$("#updateForm").validate({
-						rules : {
-							nombre : {
-								required : true,
-								maxlength: 100
-							},
-							telefono : {
-								required : true,
-								phoneNumber : true
-							},
-							
-							correo : {
-								required : true,
-								email : true
-							},
-							extension : {
-								number : true,
-								minlength: 2,
-								maxlength: 10
-							},
-							usuario : {
-								required : true,
-								maxlength: 100
-							}
-						},
-						messages : {
-							nombre : {
-								required : msgRequiredGeneric,
-								maxlength: msgMaxlength
-							},
-							telefono : {
-								required : msgRequiredGeneric,
-								phoneNumber : msgPhone
-							},
-							
-							correo : {
-								required : msgRequiredGeneric,
-								email : msgRequiredEmail
-							},
-							extension : {
-								required : msgRequiredGeneric,
-								number : msgNumber,
-								minlength: msgMinlengthNumber,
-								maxlength: msgMaxlengthNumber
-							},
-							usuario : {
-								required : msgRequiredGeneric,
-								maxlength: msgMaxlength
-							}
-						},
-						errorPlacement: function (error, element) {
-							if($(element).is("select")){
-								$(element).parent(".selectBox").addClass("error");
-							}
-							
-							var isInputFile = $(element).is("input[type='file']");
-							if (isInputFile) {
-								$(element).parent(".fancyFiled").addClass("error");
-							}
-							
-							var lastError = $(element).data("lastError"),
-			                newError = $(error).text();
-	
-				            $(element).data("lastError", newError);
-		
-				            if(newError !== "" && newError !== lastError){
-				            	if (isInputFile) {
-				            		$(element).parent(".fancyFiled").tooltipster("content", newError);
-					                $(element).parent(".fancyFiled").tooltipster("enable");
-					                $(element).parent(".fancyFiled").tooltipster("show");
-				            	} else {
-				            		$(element).tooltipster("content", newError);
-					                $(element).tooltipster("enable");
-					                $(element).tooltipster("show");
-				            	}
-				            	
-				                $("input[name].error, select[name].error, span.fancyFiled", "#updateForm").focus(function(){
-									$(this).tooltipster("show");
-								});
-				                
-				                $("input[name].error, select[name].error, span.fancyFiled", "#updateForm").blur(function(){
-									$(this).tooltipster("hide");
-								});
-				            }
-				        },
-				        success: function (label, element) {
-				        	var isInputFile = $(element).is("input[type='file']");
-				        	if($(element).is("select")){
-								$(element).parent(".selectBox").removeClass("error");
-								$(element).tooltipster("disable");
-							}
-				        	if (isInputFile) {
-								$(element).parent(".fancyFiled").removeClass("error");
-								$(element).parent(".fancyFiled").tooltipster("hide");
-						        $(element).parent(".fancyFiled").tooltipster("disable");
-							}
-				            $(element).tooltipster("hide");
-				            $(element).tooltipster("disable");
-				        }
-					});
-					
-					$("#actualizarBtn").click(function(){
-						var formulario = $("#updateForm");
-						if($(formulario).valid()){
-							$(formulario).submit();
-						}else{
-							return false;
-						}
-					});
 				});
-			});
-		});
+		
 	});
 });

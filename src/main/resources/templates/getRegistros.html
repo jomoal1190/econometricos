@@ -51,9 +51,18 @@
     <link rel="stylesheet" type="text/css" media="all" th:href="@{css/styles.css}"></link>
     <link rel="stylesheet" type="text/css" media="all" th:href="@{css/materialize.min.css}"></link>
     <link rel="stylesheet" type="text/css" media="all" th:href="@{css/nouislider.css}"></link>
+     <link rel="stylesheet" type="text/css" media="all" th:href="@{css/tooltipster.bundle.min.css}"></link>
+  
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
      <script type="text/javascript" th:src="@{js/materialize.js}"></script>
      <script type="text/javascript" th:src="@{js/nouislider.min.js}"></script>
+      <script type="text/javascript" th:src="@{js/jquery-1.12.4.min.js}"></script>
+<!--        <script type="text/javascript" th:src="@{js/jquery.validate.min.js}"></script> -->
+     <script type="text/javascript" th:src="@{js/tooltipster.bundle.min.js}"></script>
+    
+     <script type="text/javascript" th:src="@{js/validateForm.js}"></script>
+    
+     
   
     <style>
     #view-source {
@@ -94,7 +103,7 @@
       </header>
       <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
         <header class="demo-drawer-header">
-          <img src="/images/umgsimbolo.png" class="demo-avatar"></img>
+<!--           <img src="/images/umgsimbolo.png" class="demo-avatar"></img> -->
           <div class="demo-avatar-dropdown">
             <span>MODELOS ECONOMETRICOS</span>
             <div class="mdl-layout-spacer"></div>
@@ -131,8 +140,8 @@
 			    		<td><span>Elementos a conocer</span>
 			    		</td>
 			    		<td colspan="2">
-			    			<select name = "opcion" style="display: block;"  id="opcion">
-						    <option value="null">Seleccionar...</option>
+			    			<select name = "opcion" style="display: block;"  id="opcion" class="tooltie">
+						    <option value="">Seleccionar...</option>
 						    <option value="1">Segun producto</option>
 						    <option value="2">Registros totales</option>
 						    </select>
@@ -143,8 +152,9 @@
 			    		<span>Seleccione un producto</span>
 			    		</td>
 			    		<td>
-			    			<select th:field="*{producto}" style="display: block;"  name="producto">
-						    <option th:each="product : ${producto}" th:value="${product.id}" th:text="${product.nombre}">Wireframe</option>
+			    			<select  style="display: block;"  name="producto" id="producto">
+			    			<option value="">Seleccionar...</option>
+						    <option th:each="product : ${producto}" th:value="${product.id}" th:text="${product.nombre}"></option>
 						    </select>
 			    		</td>
 			    	</tr>
@@ -157,7 +167,7 @@
 			    		<div class="switch">
 						    <label>
 						      Off
-						      <input type="checkbox" name="anio" id="anio"/>
+						      <input type="checkbox" name="anio" id="anio" />
 						      <span class="lever"></span>
 						      On
 						    </label>
@@ -191,8 +201,8 @@
 			    		</td>
 			    		<td colspan="2">
 			    		  
-			    			<select style="display: block;"  name="metodo">
-						    <option value="null">Seleccionar...</option>
+			    			<select style="display: block;"  name="metodo"  id="metodo">
+						    <option value="">Seleccionar...</option>
 						    <option value="1">Dispersion</option>
 						    <option value="2">Minimos Cuadrados</option>
 						    </select>
@@ -218,29 +228,67 @@
       
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
      <script th:inline="javascript">
-     var slider = document.getElementById('range');
-     var fechaMinima =  parseInt([[${fechaMinima}]]);
-     var fechaMaxima =  parseInt([[${fechaMaxima}]]);
      
-     console.log(fechaMinima);
-     noUiSlider.create(slider, {
-    		start: [fechaMinima, fechaMaxima-5],
-    		connect: true,
-    		range: {
-    			'min': fechaMinima,
-    			'max': fechaMaxima,
-    		},
-    		step: 1,
-    		tooltips: true,
-    		
-    	});
+     
+     
      
      $(document).ready(function() {
+    	 
+    	 var slider = document.getElementById('range');
+         var fechaMinima =  parseInt([[${fechaMinima}]]);
+         var fechaMaxima =  parseInt([[${fechaMaxima}]]);
+         var rangoFinal = fechaMaxima - 5; 
+         var linea =noUiSlider.create(slider, {
+     		start: [fechaMinima, rangoFinal],
+     		connect: true,
+     		range: {
+     			'min': fechaMinima,
+     			'max': fechaMaxima,
+     		},
+     		step: 1,
+     		tooltips: true,
+     		
+     	});
+         var lUpdate = document.getElementById('l-update'),
+     	lSlide = document.getElementById('l-slide'),
+     	lSet = document.getElementById('l-set'),
+     	lChange = document.getElementById('l-change'),
+     	lStart = document.getElementById('l-start'),
+     	lEnd = document.getElementById('l-end');
+         
+    	 $( "#producto" ).change(function() {
+    		var producto = $("#producto").val(); 
+ 	    	console.log(producto)
+ 	    	var url = "/getLastRegistreProduct";
+ 	    	var resultado;
+ 	    	$.ajax({                        
+ 	    		    type: "GET",                 
+ 	    		    url: url,                     
+ 	    		    data:{producto: producto},
+ 	    		    success: function(data)             
+ 	    	           {
+ 	    	             console.log(data);
+ 	    	            slider.noUiSlider.set([null, data]);
+ 	    	           }
+ 	    		   });
+ 	    	
+ 	    	
+ 	    	
+    		});
+    	 
+    	 
+    	
+         
+    	 
+    	 
+    	 $("#anio").prop('checked', true); 
+    	 $("#rangoAnio").css("display", "table-row");
     	 $('select#opcion').on('change',function(){
     		    var valor = $(this).val();
     		    if(valor==1)
     		    	{
     		    	$("#productos").css("display", "table-row");
+    		    	
     		    	}
     		    else{
     		    	$("#productos").css("display", "none");
@@ -273,16 +321,6 @@
     	console.log($("#min").val());
     	console.log($("#max").val());
     	$("#formulario").submit();
-    	var url = "/consultarInfo";
-//     	$.ajax({                        
-//     		    type: "POST",                 
-//     		    url: url,                     
-//     		    data: $("#formulario").serialize(),
-//     		    success: function(data)             
-//     	           {
-//     	             console.log(data);               
-//     	           }
-//     		   });
     		});
     	 
     	});

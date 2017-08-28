@@ -60,6 +60,21 @@ public class FormarRegistros {
         return "getRegistros";
     }
 	
+	@RequestMapping(value="/getLastRegistreProduct", method=RequestMethod.GET)
+	public @ResponseBody String ultimoRegistroProducto(HttpServletRequest request, HttpServletResponse response)
+	{
+		String  anio = null;
+		Long producto = Long.parseLong(request.getParameter("producto"));
+		logger.info("producto "+producto);
+		List<Registro> RegistroMaximo = repositoryRegistro.findByRegistrosMaxProducto(producto);
+		logger.info("Tama "+RegistroMaximo.size());
+		SimpleDateFormat formato = new SimpleDateFormat("yyyy/MM/dd");
+		anio = formato.format(RegistroMaximo.get(0).getFechaCreacion());
+		System.out.println("Fecha "+anio.split("/")[0]);
+		anio =anio.split("/")[0];
+		return anio;
+	}
+	
 	@RequestMapping(value = "/consultarInfo", method = RequestMethod.POST)
 	 public String consultarInfo(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
 		
@@ -107,10 +122,32 @@ public class FormarRegistros {
 			
 		}
 		model.addAttribute("sinProyeccion",respuestabd);
-		logger.info("Tama "+minimos.size());
+		Integer tamanioArray = minimos.size();
+		
+		valorAnio=minimos.get(tamanioArray-1).getX().intValue();
 		RespuestaMinimos valores=valoresMinimos(minimos);
+		logger.info("Tama "+valorAnio);
 		Integer sumaAnio=0;
-		for(int i=1; i<=5; i++)
+		//VALIDACION DE ANIOS DE PROYECCION
+		Float max = null;
+		Float min = null;
+		if(!request.getParameter("max").equals(""))
+		{
+			max =Float.parseFloat(request.getParameter("max"));
+		}
+		if(!request.getParameter("min").equals(""))
+		{
+			min =Float.parseFloat(request.getParameter("min"));
+		}
+		logger.info("Ultimo Registro anio "+valorAnio);
+		logger.info("MAX "+max);
+		Integer rango = max.intValue()-valorAnio;
+		if(rango==0)
+		{
+			rango = 5;
+		}
+		logger.info("rango "+rango);
+		for(int i=1; i<=rango; i++)
 		{
 			sumaAnio=valorAnio+i;
 			RespuestaBDanio agregar = new RespuestaBDanio();
