@@ -181,7 +181,7 @@ public class ServiceWebImpl implements ServiceWeb{
 			
 		}
 		else{
-			if(mes.equals("on")) {
+			if(mes != null && mes.equals("on")) {
 				respuesta = registroRepository.findByParametrosActual();
 			}
 			else {

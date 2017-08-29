@@ -30,7 +30,9 @@ import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
 import com.umg.econo.objetosCalculos.CalculoMinimosCuadrados;
+import com.umg.econo.objetosCalculos.CalculoRegresionLineal;
 import com.umg.econo.objetosCalculos.RespuestaMinimos;
+import com.umg.econo.objetosCalculos.RespuestaRegresionLineal;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.RegistroRepository;
 import com.umg.econo.service.ServiceWeb;
@@ -89,138 +91,226 @@ public class FormarRegistros {
 		anio = formato.format(RegistroMaximo.get(0).getFechaCreacion());
 		valorAnio = Integer.parseInt(anio.split("/")[0]);
 		
-
+		
 		logger.info("anioReguest "+request.getParameter("mes"));
-		
 		List<Map> respuesta=servicioWeb.getConsulta(request, response);
-		if(respuesta.isEmpty())
+		if(request.getParameter("metodo").equals("1"))
 		{
-			model.addAttribute("Registro0",1);
-			return "graficasMostrar";
+			logger.info("Regresion ");
+			if(respuesta.isEmpty())
+			{
+				model.addAttribute("Registro0",1);
+				return "graficasMostrar";
+			}
+			else{
+				model.addAttribute("Registro0",0);
+				List<RespuestaBDanio> respuestabdProyeccion = new ArrayList<RespuestaBDanio>();
+				List<CalculoRegresionLineal> regresion = new ArrayList<CalculoRegresionLineal>();
+				List<RespuestaBDanio> respuestabd = new ArrayList<RespuestaBDanio>();
+				Integer rango=1;
+				
+				if(request.getParameter("anio") !=null)
+				{
+					model.addAttribute("valorEncabezado", "Años");
+					model.addAttribute("textoEncabezado", "Ventas por año");
+					
+					for(Map mapa: respuesta)
+					{
+						Float anioR = Float.parseFloat(mapa.get("anio").toString());
+						Float total = Float.parseFloat(mapa.get("total").toString());
+						Integer suma = Integer.parseInt(mapa.get("suma").toString());
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(anioR.toString());
+						agregar.setSuma(suma);
+						agregar.setTotal(total);
+						respuestabdProyeccion.add(agregar);
+						respuestabd.add(agregar);
+						CalculoRegresionLineal regresionCalcular = new CalculoRegresionLineal();
+						regresionCalcular.setX(anioR);
+						regresionCalcular.setY(total);
+						regresionCalcular.setX2(anioR*anioR);
+						regresionCalcular.setY2(total*total);
+						regresionCalcular.setXy(anioR*total);
+						regresion.add(regresionCalcular);
+					}
+					Integer tamanioArray = regresion.size();
+					valorAnio=regresion.get(tamanioArray-1).getX().intValue();
+					Float max = null;
+					Float min = null;
+					if(!request.getParameter("max").equals(""))
+					{
+						max =Float.parseFloat(request.getParameter("max"));
+					}
+					if(!request.getParameter("min").equals(""))
+					{
+						min =Float.parseFloat(request.getParameter("min"));
+					}
+					rango = max.intValue()-valorAnio;
+					
+					if(rango==0)
+					{
+						rango = 5;
+					}
+					logger.info("Tama "+valorAnio);
+					
+					RespuestaRegresionLineal valores = valoresRegresion(regresion);
+					Integer sumaAnio=0;
+					for(int i=1; i<=rango; i++)
+					{
+						sumaAnio=valorAnio+i;
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(sumaAnio.toString());
+						Float y = (float) (valores.getValorB1()+valores.getValorB2()*Math.log(sumaAnio));
+						agregar.setTotal(y);
+						respuestabdProyeccion.add(agregar);
+					}
+					model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta el "+(max.intValue()+rango));
+					model.addAttribute("objeto", respuestabdProyeccion);
+					logger.info("Valor b1 "+valores.getValorB1());
+					logger.info("Valor b2 "+valores.getValorB2());
+					valores = valoresRegresionCalculob(regresion);
+					logger.info("Valor b opcion 2 "+valores.getValorB1());
+					logger.info("Valor a opcion 2 "+valores.getValorB2());
+					
+				}
+				model.addAttribute("sinProyeccion",respuestabd);
+			}
+			
 		}
-		else{
-			model.addAttribute("Registro0",0);
-			List<RespuestaBDanio> respuestabdProyeccion = new ArrayList<RespuestaBDanio>();
-			List<CalculoMinimosCuadrados> minimos = new ArrayList<CalculoMinimosCuadrados>();
-			List<RespuestaBDanio> respuestabd = new ArrayList<RespuestaBDanio>();
-			Integer rango=1;
+		else if (request.getParameter("metodo").equals("2"))
+		{
+			//VALIDACION DE METODO PARA MINIMOS CUADRADOS
+			logger.info("Minimos ");
+			if(respuesta.isEmpty())
+			{
+				model.addAttribute("Registro0",1);
+				return "graficasMostrar";
+			}
+			else{
+				model.addAttribute("Registro0",0);
+				List<RespuestaBDanio> respuestabdProyeccion = new ArrayList<RespuestaBDanio>();
+				List<CalculoMinimosCuadrados> minimos = new ArrayList<CalculoMinimosCuadrados>();
+				List<RespuestaBDanio> respuestabd = new ArrayList<RespuestaBDanio>();
+				Integer rango=1;
+			
+				
+				if(request.getParameter("anio") != null)
+				{
+					model.addAttribute("valorEncabezado", "Años");
+					model.addAttribute("textoEncabezado", "Ventas por año");
+					for(Map mapa: respuesta)
+					{
+						Float anioM=Float.parseFloat(mapa.get("anio").toString());
+						Float total =Float.parseFloat(mapa.get("total").toString());
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(mapa.get("anio").toString());
+						agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
+						agregar.setTotal(total);
+						logger.info("Total "+mapa.get("total"));
+						respuestabdProyeccion.add(agregar);
+						respuestabd.add(agregar);
+						//AGREAGANDO VALORES A MINIMOS CUADRADOS
+						CalculoMinimosCuadrados nuevoMinimo = new CalculoMinimosCuadrados();
+						nuevoMinimo.setX(anioM);
+						nuevoMinimo.setY(total);
+						nuevoMinimo.setXy(anioM*total);
+						Float potencia = (float) (anioM*anioM);
+						nuevoMinimo.setX2(potencia);
+						minimos.add(nuevoMinimo);
+					}
+					Integer tamanioArray = minimos.size();
+					valorAnio=minimos.get(tamanioArray-1).getX().intValue();
+					
+					logger.info("Tama "+valorAnio);
+					
+					//VALIDACION DE ANIOS DE PROYECCION
+					Float max = null;
+					Float min = null;
+					if(!request.getParameter("max").equals(""))
+					{
+						max =Float.parseFloat(request.getParameter("max"));
+					}
+					if(!request.getParameter("min").equals(""))
+					{
+						min =Float.parseFloat(request.getParameter("min"));
+					}
+					
+					rango = max.intValue()-valorAnio;
+					
+					if(rango==0)
+					{
+						rango = 5;
+					}
+					
+					RespuestaMinimos valores=valoresMinimos(minimos);
+					logger.info("Valor b1 "+valores.getValorb());
+					logger.info("Valor b2 "+valores.getValorm());
+					Integer sumaAnio=0;
+					for(int i=1; i<=rango; i++)
+					{
+						sumaAnio=valorAnio+i;
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(sumaAnio.toString());
+						Float y = valores.getValorm()*sumaAnio+valores.getValorb();
+						agregar.setTotal(y);
+						respuestabdProyeccion.add(agregar);
+					}
+					model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta el "+(max.intValue()+rango));
+					model.addAttribute("objeto", respuestabdProyeccion);
+				}
+				else if (request.getParameter("mes").equals("on"))
+				{
+					model.addAttribute("valorEncabezado", "Meses");
+					model.addAttribute("textoEncabezado", "Ventas por mes");
+					for(Map mapa: respuesta)
+					{
+						logger.info("Mes "+mapa.get("mes"));
+						logger.info("Suma "+mapa.get("suma"));
+						logger.info("Total "+mapa.get("total"));
+						Float anioM=Float.parseFloat(mapa.get("mes").toString());
+						Float total =Float.parseFloat(mapa.get("total").toString());
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(utileria.cambioMesNumero(mapa.get("mes").hashCode()));
+						agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
+						agregar.setTotal(total);
+						logger.info("Total "+mapa.get("total"));
+						respuestabdProyeccion.add(agregar);
+						respuestabd.add(agregar);
+						//AGREAGANDO VALORES A MINIMOS CUADRADOS
+						CalculoMinimosCuadrados nuevoMinimo = new CalculoMinimosCuadrados();
+						nuevoMinimo.setX(anioM);
+						nuevoMinimo.setY(total);
+						nuevoMinimo.setXy(anioM*total);
+						Float potencia = (float) (anioM*anioM);
+						nuevoMinimo.setX2(potencia);
+						minimos.add(nuevoMinimo);
+					}
+					
+					Integer tamanioArray = minimos.size();
+					rango = 12-tamanioArray;
+					valorAnio=minimos.get(tamanioArray-1).getX().intValue();
+					RespuestaMinimos valores=valoresMinimos(minimos);
+					Integer sumaAnio=0;
+					for(int i=1; i<=rango; i++)
+					{
+						sumaAnio=valorAnio+i;
+						RespuestaBDanio agregar = new RespuestaBDanio();
+						agregar.setAnio(utileria.cambioMesNumero(sumaAnio));
+						Float y = valores.getValorm()*sumaAnio+valores.getValorb();
+						agregar.setTotal(y);
+						respuestabdProyeccion.add(agregar);
+					}
+					model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta diciembre del presente año");
+					model.addAttribute("objeto", respuestabdProyeccion);
+							
+				}
+				
+				model.addAttribute("sinProyeccion",respuestabd);
+		}
 		
 			
-			if(request.getParameter("anio") != null)
-			{
-				model.addAttribute("valorEncabezado", "Años");
-				model.addAttribute("textoEncabezado", "Ventas por año");
-				for(Map mapa: respuesta)
-				{
-					Float anioM=Float.parseFloat(mapa.get("anio").toString());
-					Float total =Float.parseFloat(mapa.get("total").toString());
-					RespuestaBDanio agregar = new RespuestaBDanio();
-					agregar.setAnio(mapa.get("anio").toString());
-					agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
-					agregar.setTotal(total);
-					logger.info("Total "+mapa.get("total"));
-					respuestabdProyeccion.add(agregar);
-					respuestabd.add(agregar);
-					//AGREAGANDO VALORES A MINIMOS CUADRADOS
-					CalculoMinimosCuadrados nuevoMinimo = new CalculoMinimosCuadrados();
-					nuevoMinimo.setX(anioM);
-					nuevoMinimo.setY(total);
-					nuevoMinimo.setXy(anioM*total);
-					Float potencia = (float) (anioM*anioM);
-					nuevoMinimo.setX2(potencia);
-					minimos.add(nuevoMinimo);
-				}
-				Integer tamanioArray = minimos.size();
-				valorAnio=minimos.get(tamanioArray-1).getX().intValue();
-				
-				logger.info("Tama "+valorAnio);
-				
-				//VALIDACION DE ANIOS DE PROYECCION
-				Float max = null;
-				Float min = null;
-				if(!request.getParameter("max").equals(""))
-				{
-					max =Float.parseFloat(request.getParameter("max"));
-				}
-				if(!request.getParameter("min").equals(""))
-				{
-					min =Float.parseFloat(request.getParameter("min"));
-				}
-				
-				rango = max.intValue()-valorAnio;
-				
-				if(rango==0)
-				{
-					rango = 5;
-				}
-				logger.info("rango "+rango);
-				RespuestaMinimos valores=valoresMinimos(minimos);
-				Integer sumaAnio=0;
-				for(int i=1; i<=rango; i++)
-				{
-					sumaAnio=valorAnio+i;
-					RespuestaBDanio agregar = new RespuestaBDanio();
-					agregar.setAnio(sumaAnio.toString());
-					Float y = valores.getValorm()*sumaAnio+valores.getValorb();
-					agregar.setTotal(y);
-					respuestabdProyeccion.add(agregar);
-				}
-				model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta el "+(max.intValue()+rango));
-				model.addAttribute("objeto", respuestabdProyeccion);
-			}
-			else if (request.getParameter("mes").equals("on"))
-			{
-				model.addAttribute("valorEncabezado", "Meses");
-				model.addAttribute("textoEncabezado", "Ventas por mes");
-				for(Map mapa: respuesta)
-				{
-					logger.info("Mes "+mapa.get("mes"));
-					logger.info("Suma "+mapa.get("suma"));
-					logger.info("Total "+mapa.get("total"));
-					Float anioM=Float.parseFloat(mapa.get("mes").toString());
-					Float total =Float.parseFloat(mapa.get("total").toString());
-					RespuestaBDanio agregar = new RespuestaBDanio();
-					agregar.setAnio(utileria.cambioMesNumero(mapa.get("mes").hashCode()));
-					agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
-					agregar.setTotal(total);
-					logger.info("Total "+mapa.get("total"));
-					respuestabdProyeccion.add(agregar);
-					respuestabd.add(agregar);
-					//AGREAGANDO VALORES A MINIMOS CUADRADOS
-					CalculoMinimosCuadrados nuevoMinimo = new CalculoMinimosCuadrados();
-					nuevoMinimo.setX(anioM);
-					nuevoMinimo.setY(total);
-					nuevoMinimo.setXy(anioM*total);
-					Float potencia = (float) (anioM*anioM);
-					nuevoMinimo.setX2(potencia);
-					minimos.add(nuevoMinimo);
-				}
-				
-				Integer tamanioArray = minimos.size();
-				rango = 12-tamanioArray;
-				valorAnio=minimos.get(tamanioArray-1).getX().intValue();
-				RespuestaMinimos valores=valoresMinimos(minimos);
-				Integer sumaAnio=0;
-				for(int i=1; i<=rango; i++)
-				{
-					sumaAnio=valorAnio+i;
-					RespuestaBDanio agregar = new RespuestaBDanio();
-					agregar.setAnio(utileria.cambioMesNumero(sumaAnio));
-					Float y = valores.getValorm()*sumaAnio+valores.getValorb();
-					agregar.setTotal(y);
-					respuestabdProyeccion.add(agregar);
-				}
-				model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta diciembre del presente año");
-				model.addAttribute("objeto", respuestabdProyeccion);
-						
-			}
-			
-			model.addAttribute("sinProyeccion",respuestabd);
-			
-			
-			
-			return "graficasMostrar";
 		}
+		return "graficasMostrar";
 		
 	}
 
@@ -249,6 +339,78 @@ public class FormarRegistros {
 		logger.info("b "+b);
 		respuesta.setValorm(m);
 		respuesta.setValorb(b);
+		return respuesta;
+	}
+	
+	public RespuestaRegresionLineal valoresRegresion(List<CalculoRegresionLineal> calculos)
+	{
+		RespuestaRegresionLineal respuesta = new RespuestaRegresionLineal();
+		Float sumax = (float) 0.00;
+		Float sumay = (float) 0.00;
+		Float sumay2 = (float) 0.00;
+		Float sumax2 = (float) 0.00;
+		Float sumaxy = (float) 0.00;
+		
+		for(CalculoRegresionLineal cal: calculos)
+		{
+			sumax +=cal.getX();
+			sumay += cal.getY();
+			sumax2 += cal.getX2();
+			sumay2 += cal.getY2();
+			sumaxy += cal.getXy();
+		}
+		
+		Integer n = calculos.size();
+	
+		//Calculos de medias
+		Float xmedia = sumax/n;
+		Float ymedia = sumay/n;
+		//Varianzas de desviaciones tipicas cuadradas
+		Float varianzax2 = (sumax2/n)-(xmedia*xmedia);
+		Float varianzay2 = (sumay2/n)-(ymedia*ymedia);
+		//Varianzas de desviaciones tipicas
+		Float varianzax = (float) Math.sqrt(varianzax2);
+		Float varianzay = (float) Math.sqrt(varianzay2);
+		//Covarianza xy
+		Float covarianzaxy = (sumaxy/n)-(xmedia*ymedia);
+		//Correlacion lineal de Pearson
+		Float rpearson = (covarianzaxy)/(varianzax*varianzay);
+		//Recta de regresion 
+		Float b1 = (covarianzaxy/varianzax2);
+		Float b2 = ymedia +((covarianzaxy/varianzax2)*(-xmedia));
+		respuesta.setValorB1(b1);
+		respuesta.setValorB2(b2);
+		
+		return respuesta;
+	}
+	
+	public RespuestaRegresionLineal valoresRegresionCalculob(List<CalculoRegresionLineal> calculos)
+	{
+		RespuestaRegresionLineal respuesta = new RespuestaRegresionLineal();
+		Float sumax = (float) 0.00;
+		Float sumay = (float) 0.00;
+		Float sumay2 = (float) 0.00;
+		Float sumax2 = (float) 0.00;
+		Float sumaxy = (float) 0.00;
+		
+		for(CalculoRegresionLineal cal: calculos)
+		{
+			sumax +=cal.getX();
+			sumay += cal.getY();
+			sumax2 += cal.getX2();
+			sumay2 += cal.getY2();
+			sumaxy += cal.getXy();
+		}
+		Integer n = calculos.size();
+		//Calculos de medias
+		Float xmedia = sumax/n;
+		Float ymedia = sumay/n;
+		//Varianzas de desviaciones tipicas cuadradas
+		Float b = ((sumaxy)-(n*xmedia*ymedia))/((sumax2)-(n*xmedia*xmedia));
+		Float a = ymedia - (b*xmedia);
+		respuesta.setValorB1(b);
+		respuesta.setValorB2(a);
+		
 		return respuesta;
 	}
 	
