@@ -29,4 +29,14 @@ public interface RegistroRepository extends CrudRepository<Registro, Long>{
 	@Query("select new map(year(r.fechaCreacion) as anio, sum(r.cantidad) as suma, sum(r.cantidad*p.precio) as total) from Registro r  inner join r.producto as p "
 			+ "where year(r.fechaCreacion)=year(r.fechaCreacion) and p.id=?1 group by year(r.fechaCreacion) order by year(r.fechaCreacion) asc") 
 	List<Map> findByParametrosProducto(Long producto);
+	
+	@Query("select new map(month(r.fechaCreacion) as mes, sum(r.cantidad) as suma, sum(r.cantidad*p.precio) as total) from Registro r inner join r.producto as p "
+			+ "where year(r.fechaCreacion)=year(curdate()) group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc") 
+	List<Map> findByParametrosActual();
+	
+	@Query("select new map(month(r.fechaCreacion) as mes, sum(r.cantidad) as suma, sum(r.cantidad*p.precio) as total) from Registro r inner join r.producto as p "
+			+ "where year(r.fechaCreacion)=year(curdate()) and r.producto.id=?1  group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc") 
+	List<Map> findByParametrosActuaProductol(Long producto);
+	
+	
 }

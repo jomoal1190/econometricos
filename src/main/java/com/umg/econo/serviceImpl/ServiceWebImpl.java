@@ -171,11 +171,23 @@ public class ServiceWebImpl implements ServiceWeb{
 		if(producto != null)
 		{
 			logger.info("Producto "+producto);
-			respuesta = registroRepository.findByParametrosProducto(producto);
+			if(mes != null && mes.equals("on") )
+			{
+				respuesta = registroRepository.findByParametrosActuaProductol(producto);
+			}else {
+				respuesta = registroRepository.findByParametrosProducto(producto);
+			}
+			
 			
 		}
 		else{
-			respuesta = registroRepository.findByParametrosAll();
+			if(mes.equals("on")) {
+				respuesta = registroRepository.findByParametrosActual();
+			}
+			else {
+				respuesta = registroRepository.findByParametrosAll();
+			}
+			
 		}
 		
 		

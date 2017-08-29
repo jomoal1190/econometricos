@@ -116,11 +116,21 @@
         </nav>
       </div>
       <main class="mdl-layout__content mdl-color--grey-100">
-      <div class="mdl-grid demo-content">
+      <div th:switch="${Registro0}"> 
+      		<div class="mdl-grid demo-content" th:case="1">
+      			<div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+	     			<p style="text-align:center"> <h1>NO EXISTEN RESULTADOS</h1></p>
+					<div style="width: 100%; padding:70px"> 
+		      		 <p>NO EXISTEN REGISTRO</p>
+		     		 
+				</div>
+			</div>
+		</div>
+	<div th:case="0">
+	<div class="mdl-grid demo-content" >
       <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
 	     <p style="text-align:center"> <h1>DATOS CONSULTADOS</h1></p>
 			<div style="width: 100%; padding:70px"> 
-		       <p>Resultados proyectados a </p>
 		       <table class="striped" style="width:80%">
 		       	<thead>
 		       	<th >Año</th>
@@ -134,30 +144,28 @@
 		       	</tbody>
 		       </table>
 			</div>
-			
-			 </div>
 		</div>
+	</div>
 	    
-	  <div class="mdl-grid demo-content">
+	 <div class="mdl-grid demo-content" >
       <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
 	     <p style="text-align:center"> <h1>Gráfica de Datos Actuales</h1></p>
 			<div style="width: 100%; padding:70px"> 
-		       <p>Resultados proyectados a </p>
 		      <div id="GraficoSinProyeccion" style="width: 800px; height: 600px"/>
 			</div>
-			
-			 </div>
-		</div> 
-	<div class="mdl-grid demo-content">
+		</div>
+	</div> 
+	<div class="mdl-grid demo-content" >
       <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-	     <p style="text-align:center"> <h1>Gráfica de Datos Proyectados</h1></p>
+	     <h1 style="text-align:center">Gráfica de Datos Proyectados</h1>
 			<div style="width: 100%; padding:70px"> 
-		       <p>Resultados proyectados a </p>
 		      <div id="GraficoConProyeccion" style="width: 800px; height: 600px"/>
 			</div>
-			
-			 </div>
-		</div> 
+		</div>
+	</div>
+	</div>  
+	</div>
+      
 	     
       </main>
     </div>
@@ -170,7 +178,7 @@
 
 <script th:inline="javascript">
 /*<![CDATA[*/
-
+	console.log([[${Registro0}]]);
     var objeto = [[${sinProyeccion}]];
     var objetoProyeccion = [[${objeto}]];
     google.charts.load('current', {'packages':['line']});
@@ -179,8 +187,8 @@
   	function drawChart() {
 
     var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Año');
-    data.addColumn('number', 'Ventas por año');
+    data.addColumn('string', [[${valorEncabezado}]]);
+    data.addColumn('number', [[${textoEncabezado}]]);
     var objeto2 = [];
     for (obj in objeto)
     	{
@@ -204,8 +212,8 @@
     chart.draw(data, google.charts.Line.convertOptions(options));
     
     var data2 = new google.visualization.DataTable();
-    data2.addColumn('string', 'Año');
-    data2.addColumn('number', 'Ventas por año');
+    data2.addColumn('string', [[${valorEncabezado}]]);
+    data2.addColumn('number', [[${textoEncabezado}]]);
     var objeto2 = [];
     for (obj in objetoProyeccion)
     	{
@@ -217,9 +225,11 @@
 
     var options2 = {
       chart: {
-        title: 'Resultados con proyeccion a 5 años',
+        title: [[${rangoProyeccion}]],
         subtitle: 'Cifras en Quetzales'
       },
+      series: [{'color': '#D9544C'}],
+
       width: 900,
       height: 500
     };
