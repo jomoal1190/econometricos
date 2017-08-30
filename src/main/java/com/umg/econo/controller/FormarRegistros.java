@@ -29,13 +29,17 @@ import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
+import com.umg.econo.objetosCalculos.CalculoFuncionCuadratica;
 import com.umg.econo.objetosCalculos.CalculoMinimosCuadrados;
 import com.umg.econo.objetosCalculos.CalculoRegresionLineal;
+import com.umg.econo.objetosCalculos.RespuestaFuncionCuadratica;
 import com.umg.econo.objetosCalculos.RespuestaMinimos;
 import com.umg.econo.objetosCalculos.RespuestaRegresionLineal;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.RegistroRepository;
 import com.umg.econo.service.ServiceWeb;
+
+import Jama.Matrix;
 
 @Controller
 public class FormarRegistros {
@@ -108,6 +112,7 @@ public class FormarRegistros {
 				List<RespuestaBDanio> respuestabdProyeccion = new ArrayList<RespuestaBDanio>();
 				List<CalculoRegresionLineal> regresion = new ArrayList<CalculoRegresionLineal>();
 				List<RespuestaBDanio> respuestabd = new ArrayList<RespuestaBDanio>();
+				List<CalculoFuncionCuadratica> funcionCuadratica = new ArrayList<CalculoFuncionCuadratica>();
 				Integer rango=1;
 				
 				if(request.getParameter("anio") !=null)
@@ -133,7 +138,22 @@ public class FormarRegistros {
 						regresionCalcular.setY2(total*total);
 						regresionCalcular.setXy(anioR*total);
 						regresion.add(regresionCalcular);
+						
+						//AGREGANDO CAMPOS PARA FUNCION CUADRATICA PRUEBA 1
+						CalculoFuncionCuadratica cuadratica = new CalculoFuncionCuadratica();
+						cuadratica.setX(anioR);
+						cuadratica.setY(total);
+						cuadratica.setX2(anioR*anioR);
+						cuadratica.setX3(anioR*anioR*anioR);
+						cuadratica.setX4(anioR*anioR*anioR*anioR);
+						cuadratica.setXy(anioR*total);
+						cuadratica.setX2y(anioR*anioR*total);
+						funcionCuadratica.add(cuadratica);						
+						
 					}
+					
+					RespuestaFuncionCuadratica resultado = valoresFuncionCuadratica(funcionCuadratica);
+					
 					Integer tamanioArray = regresion.size();
 					valorAnio=regresion.get(tamanioArray-1).getX().intValue();
 					Float max = null;
@@ -161,11 +181,24 @@ public class FormarRegistros {
 						sumaAnio=valorAnio+i;
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(sumaAnio.toString());
-						Float y = (float) (valores.getValorB1()+valores.getValorB2()*Math.log(sumaAnio));
+						
+						Float y = (float) (valores.getValorB1()*sumaAnio+valores.getValorB2());
 //						Float y = (float) Math.pow(sumaAnio, valores.getValorB1());
 						agregar.setTotal(y);
 						respuestabdProyeccion.add(agregar);
 					}
+					//  ------------ LLAMADA A METODO FUNCION CUADRATICA
+//					for(int i=1; i<=rango; i++)
+//					{
+//						sumaAnio=valorAnio+i;
+//						RespuestaBDanio agregar = new RespuestaBDanio();
+//						agregar.setAnio(sumaAnio.toString());
+//						Float y = (float) (sumaAnio*sumaAnio*resultado.getC())-(sumaAnio*resultado.getB())+(resultado.getA()) ;
+////						Float y = (float) Math.pow(sumaAnio, valores.getValorB1());
+//						
+//						agregar.setTotal(y);
+//						respuestabdProyeccion.add(agregar);
+//					}
 					model.addAttribute("rangoProyeccion", "Resultados con proyeccion hasta el "+(max.intValue()+rango));
 					model.addAttribute("objeto", respuestabdProyeccion);
 					logger.info("Valor b1 "+valores.getValorB1());
@@ -181,6 +214,9 @@ public class FormarRegistros {
 		}
 		else if (request.getParameter("metodo").equals("2"))
 		{
+			
+			
+			
 			//VALIDACION DE METODO PARA MINIMOS CUADRADOS
 			logger.info("Minimos ");
 			model.addAttribute("grafica", 2);
@@ -413,6 +449,51 @@ public class FormarRegistros {
 		Float a = ymedia - (b*xmedia);
 		respuesta.setValorB1(b);
 		respuesta.setValorB2(a);
+		
+		return respuesta;
+	}
+	
+	
+	public RespuestaFuncionCuadratica valoresFuncionCuadratica(List<CalculoFuncionCuadratica> calculos){
+		RespuestaFuncionCuadratica respuesta = new RespuestaFuncionCuadratica();
+		Float sumax = (float) 0.00;
+		Float sumay = (float) 0.00;
+		Float sumax2 = (float) 0.00;
+		Float sumax3 = (float) 0.00;
+		Float sumax4 = (float) 0.00;
+		Float sumaxy = (float) 0.00;
+		Float sumax2y = (float) 0.00;
+		
+		
+		for(CalculoFuncionCuadratica cal: calculos)
+		{
+			sumax +=cal.getX();
+			sumay += cal.getY();
+			sumax2 += cal.getX2();
+			sumax3 += cal.getX3();
+			sumax4 += cal.getX4();
+			sumaxy += cal.getXy();
+			sumax2y += cal.getX2y();
+		}
+		Integer n = calculos.size();
+		double[][] lhsArray = {{n, sumax, sumax2}, {sumax, sumax2, sumax3}, {sumax2, sumax3, sumax4}};
+        double[] rhsArray = {sumay, sumaxy, sumax2y};
+ 
+        //Creating Matrix Objects with arrays
+        Matrix lhs = new Matrix(lhsArray);
+        Matrix rhs = new Matrix(rhsArray, 3);
+ 
+        //Calculate Solved Matrix
+        Matrix ans = lhs.solve(rhs);
+ 
+        //Printing Answers
+       
+        respuesta.setA((float) Math.round(ans.get(0, 0)));
+        respuesta.setB( (float) Math.round(ans.get(1, 0)));
+        respuesta.setC((float) Math.round(ans.get(2, 0)));
+        System.out.println("x = " + Math.round(ans.get(0, 0)));
+        System.out.println("y = " + Math.round(ans.get(1, 0)));
+        System.out.println("z = " + Math.round(ans.get(2, 0)));
 		
 		return respuesta;
 	}

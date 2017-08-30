@@ -235,7 +235,8 @@
           series: [{'color': '#D9544C'}],
 
           width: 900,
-          height: 500
+          height: 500,
+          intervals: { style: 'bars' },
         };
         
         var chart2 = new google.charts.Line(document.getElementById('GraficoConProyeccion'));
@@ -281,7 +282,7 @@
           	          hAxis: {title: 'Año',  titleTextStyle: {color: '#333'}},
           	          vAxis: {minValue: 0},
           	        width: 900,
-                    height: 500
+                    height: 500,
           	        };
               var chart2 = new google.visualization.AreaChart(document.getElementById('GraficoConProyeccion'));
     	        chart2.draw(data2, options2);
