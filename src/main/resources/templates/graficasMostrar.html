@@ -181,62 +181,119 @@
 	console.log([[${Registro0}]]);
     var objeto = [[${sinProyeccion}]];
     var objetoProyeccion = [[${objeto}]];
-    google.charts.load('current', {'packages':['line']});
-    google.charts.setOnLoadCallback(drawChart);
-
-  	function drawChart() {
-
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', [[${valorEncabezado}]]);
-    data.addColumn('number', [[${textoEncabezado}]]);
-    var objeto2 = [];
-    for (obj in objeto)
+    var tipoGrafica = [[${grafica}]];
+    console.log("Tipo grafica "+tipoGrafica);
+    if(tipoGrafica==1)
     	{
-    	objeto2.push([objeto[obj].anio,objeto[obj].total]);
+    	google.charts.load('current', {'packages':['line']});
+        google.charts.setOnLoadCallback(drawChart);
+
+      	function drawChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', [[${valorEncabezado}]]);
+        data.addColumn('number', [[${textoEncabezado}]]);
+        var objeto2 = [];
+        for (obj in objeto)
+        	{
+        	objeto2.push([objeto[obj].anio,objeto[obj].total]);
+        	}
+        console.log(objeto2);
+        data.addRows(objeto2);
+    	
+
+        var options = {
+          chart: {
+            title: 'Resultados actuales sin proyeccion',
+            subtitle: 'Cifras en Quetzales'
+          },
+          width: 900,
+          height: 500
+        };
+
+        var chart = new google.charts.Line(document.getElementById('GraficoSinProyeccion'));
+        
+        chart.draw(data, google.charts.Line.convertOptions(options));
+        
+        var data2 = new google.visualization.DataTable();
+        data2.addColumn('string', [[${valorEncabezado}]]);
+        data2.addColumn('number', [[${textoEncabezado}]]);
+        var objeto2 = [];
+        for (obj in objetoProyeccion)
+        	{
+        	objeto2.push([objetoProyeccion[obj].anio,objetoProyeccion[obj].total]);
+        	}
+        console.log(objeto2);
+        data2.addRows(objeto2);
+    	
+
+        var options2 = {
+          chart: {
+            title: [[${rangoProyeccion}]],
+            subtitle: 'Cifras en Quetzales'
+          },
+          series: [{'color': '#D9544C'}],
+
+          width: 900,
+          height: 500
+        };
+        
+        var chart2 = new google.charts.Line(document.getElementById('GraficoConProyeccion'));
+        chart2.draw(data2, google.charts.Line.convertOptions(options2));
+    	
     	}
-    console.log(objeto2);
-    data.addRows(objeto2);
-	
-
-    var options = {
-      chart: {
-        title: 'Resultados actuales sin proyeccion',
-        subtitle: 'Cifras en Quetzales'
-      },
-      width: 900,
-      height: 500
-    };
-
-    var chart = new google.charts.Line(document.getElementById('GraficoSinProyeccion'));
-    
-    chart.draw(data, google.charts.Line.convertOptions(options));
-    
-    var data2 = new google.visualization.DataTable();
-    data2.addColumn('string', [[${valorEncabezado}]]);
-    data2.addColumn('number', [[${textoEncabezado}]]);
-    var objeto2 = [];
-    for (obj in objetoProyeccion)
-    	{
-    	objeto2.push([objetoProyeccion[obj].anio,objetoProyeccion[obj].total]);
     	}
-    console.log(objeto2);
-    data2.addRows(objeto2);
-	
+      	if(tipoGrafica ==2)
+      		{
+      		 google.charts.load('current', {'packages':['corechart']});
+      	     google.charts.setOnLoadCallback(drawChart);
+		      var objeto2 = [['Año','Ventas']];
+		           for (obj in objeto)
+		           	{
+		           	objeto2.push([objeto[obj].anio,objeto[obj].total]);
+		           	}
+		           console.log(objeto2);
+      	      function drawChart() {
+      	        var data = google.visualization.arrayToDataTable(objeto2);
 
-    var options2 = {
-      chart: {
-        title: [[${rangoProyeccion}]],
-        subtitle: 'Cifras en Quetzales'
-      },
-      series: [{'color': '#D9544C'}],
+      	        var options = {
+      	          title: [[${textoEncabezado}]],
+      	          hAxis: {title: 'Año',  titleTextStyle: {color: '#333'}},
+      	          vAxis: {minValue: 0},
+	      	        width: 900,
+	                height: 500
+      	        };
 
-      width: 900,
-      height: 500
-    };
+      	        var chart = new google.visualization.AreaChart(document.getElementById('GraficoSinProyeccion'));
+      	        chart.draw(data, options);
+      	        
+      	        
+      	        
+      	      var objeto = [['Año','Ventas']];
+              for (obj in objetoProyeccion)
+              	{
+              	objeto.push([objetoProyeccion[obj].anio,objetoProyeccion[obj].total]);
+              	}
+              console.log(objeto);
+              var data2 = google.visualization.arrayToDataTable(objeto);
+              var options2 = {
+          	          title: [[${textoEncabezado}]],
+          	          hAxis: {title: 'Año',  titleTextStyle: {color: '#333'}},
+          	          vAxis: {minValue: 0},
+          	        width: 900,
+                    height: 500
+          	        };
+              var chart2 = new google.visualization.AreaChart(document.getElementById('GraficoConProyeccion'));
+    	        chart2.draw(data2, options2);
+              
+      	      }
+      	      
+      	      
+      	   
+
+      		}
     
-    var chart2 = new google.charts.Line(document.getElementById('GraficoConProyeccion'));
-    chart2.draw(data2, google.charts.Line.convertOptions(options2));
-  }
+    
 
 /*]]>*/
 

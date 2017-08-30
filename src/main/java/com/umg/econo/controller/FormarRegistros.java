@@ -97,6 +97,7 @@ public class FormarRegistros {
 		if(request.getParameter("metodo").equals("1"))
 		{
 			logger.info("Regresion ");
+			model.addAttribute("grafica", 1);
 			if(respuesta.isEmpty())
 			{
 				model.addAttribute("Registro0",1);
@@ -161,6 +162,7 @@ public class FormarRegistros {
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(sumaAnio.toString());
 						Float y = (float) (valores.getValorB1()+valores.getValorB2()*Math.log(sumaAnio));
+//						Float y = (float) Math.pow(sumaAnio, valores.getValorB1());
 						agregar.setTotal(y);
 						respuestabdProyeccion.add(agregar);
 					}
@@ -181,6 +183,7 @@ public class FormarRegistros {
 		{
 			//VALIDACION DE METODO PARA MINIMOS CUADRADOS
 			logger.info("Minimos ");
+			model.addAttribute("grafica", 2);
 			if(respuesta.isEmpty())
 			{
 				model.addAttribute("Registro0",1);
