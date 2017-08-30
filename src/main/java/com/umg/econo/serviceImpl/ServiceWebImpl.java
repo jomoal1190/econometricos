@@ -170,7 +170,7 @@ public class ServiceWebImpl implements ServiceWeb{
 		
 		if(producto != null)
 		{
-			logger.info("Producto "+producto);
+			
 			if(mes != null && mes.equals("on") )
 			{
 				respuesta = registroRepository.findByParametrosActuaProductol(producto);
@@ -181,11 +181,14 @@ public class ServiceWebImpl implements ServiceWeb{
 			
 		}
 		else{
-			if(mes != null && mes.equals("on")) {
+			
+			if(mes != null || mes.equals("on")) {
 				respuesta = registroRepository.findByParametrosActual();
+				
 			}
 			else {
 				respuesta = registroRepository.findByParametrosAll();
+				
 			}
 			
 		}

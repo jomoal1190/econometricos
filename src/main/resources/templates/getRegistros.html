@@ -249,6 +249,14 @@
      		tooltips: true,
      		
      	});
+         $( "#opcion" ).change(function() {
+        	 if ($("#opcion").val() != 1)
+        		 {
+        		 $( "#producto" ).val("");
+        		 }
+         });
+         
+         
          var lUpdate = document.getElementById('l-update'),
      	lSlide = document.getElementById('l-slide'),
      	lSet = document.getElementById('l-set'),
