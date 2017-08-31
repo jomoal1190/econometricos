@@ -29,15 +29,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaGeneralDao;
+import com.umg.econo.model.Categoria;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
+import com.umg.econo.repository.CategoriaRepository;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.service.ServiceWeb;
 
 
 @Controller
 public class ImportarController {
-	
+	private static Logger logger = LoggerFactory.getLogger(ImportarController.class);
 	@RequestMapping(value="/unploadExcel", method=RequestMethod.GET)
     public String customerForm(Model model) {
 	
@@ -46,6 +48,7 @@ public class ImportarController {
 	
 	@Autowired ServiceWeb servicioWeb;
 	@Autowired ProductosRepository productoRepository;
+	@Autowired CategoriaRepository categoriaRepository;
 	
 	
 	@PostMapping("/unploadExcel") 
@@ -76,9 +79,8 @@ public class ImportarController {
                 Iterator<Cell> cellIterator = nextRow.cellIterator();
                 int numRow = nextRow.getRowNum(); 
                 int ultimaColumna=nextRow.getLastCellNum();
-               
                 Producto producto = new Producto();
-                if(ultimaColumna<=2)
+                if(ultimaColumna<=3)
                 {
                 	while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
@@ -93,6 +95,13 @@ public class ImportarController {
         	             		else if(numeroCelda==1)
         	             		{
         	             			 producto.setPrecio(cell.getNumericCellValue());
+        	             		}
+        	             		else if(numeroCelda==2)
+        	             		{
+        	             			Integer id= (int) cell.getNumericCellValue();
+        	             			Categoria categoria = categoriaRepository.findById(Long.parseLong(id.toString()));
+        	             			logger.info("Nombre de la categoria "+categoria.getDescripcion());
+        	             			producto.setCategoria(categoria);
         	             		}
         	             	 
         	             		 if(!lista.contains(producto)) {

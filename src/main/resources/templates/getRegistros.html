@@ -147,6 +147,17 @@
 						    </select>
 			    		</td>
 			    	</tr>
+			    	<tr id="categorias" style="display: none">
+			    		<td>
+			    		<span>Seleccione un producto</span>
+			    		</td>
+			    		<td>
+			    			<select  style="display: block;"  name="categoria" id="categoria">
+			    			<option value="">Seleccionar...</option>
+						    <option th:each="cate : ${categoria}" th:value="${cate.id}" th:text="${cate.descripcion}"></option>
+						    </select>
+			    		</td>
+			    	</tr>
 			    	<tr id="productos" style="display: none">
 			    		<td>
 			    		<span>Seleccione un producto</span>
@@ -296,11 +307,11 @@
     		    var valor = $(this).val();
     		    if(valor==1)
     		    	{
-    		    	$("#productos").css("display", "table-row");
+    		    	$("#categorias").css("display", "table-row");
     		    	
     		    	}
     		    else{
-    		    	$("#productos").css("display", "none");
+    		    	$("#categorias").css("display", "none");
     		    }
     		});
     	 
