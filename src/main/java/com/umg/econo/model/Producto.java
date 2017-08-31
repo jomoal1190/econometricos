@@ -10,9 +10,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -30,18 +33,39 @@ public class Producto {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy="producto")
 	@JsonManagedReference
 	Set<Registro> registros = new HashSet<Registro>();
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonBackReference
+	@JoinColumn(name="id_categoria")
+	private Categoria categoria;
 	
 	
 	public Producto() {}
 	
 	
-	public Producto(Long id, String nombre, Double precio, Set<Registro> registros) {
+	
+	public Producto(Long id, String nombre, Double precio, Set<Registro> registros, Categoria categoria) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.registros = registros;
+		this.categoria = categoria;
 	}
+
+
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}
