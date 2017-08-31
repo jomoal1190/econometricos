@@ -63,50 +63,50 @@ public class Utileria {
 		String espa=null;
 		if(mes==1)
 		{
-			espa="Enero";
+			espa="Ene";
 		}
 		else if(mes==2) {
-			espa="Febrero";
+			espa="Feb";
 		}
 		else if(mes==3)
 		{
-			espa="Marzo";
+			espa="Mar";
 		}
 		else if(mes==4)
 		{
-			espa="Abril";
+			espa="Abr";
 		}
 		else if(mes==5)
 		{
-			espa="Mayo";
+			espa="May";
 		}
 		else if(mes==6)
 		{
-			espa="Junio";
+			espa="Jun";
 		}
 		else if(mes==7)
 		{
-			espa="Julio";
+			espa="Jul";
 		}
 		else if(mes==8)
 		{
-			espa="Agosto";
+			espa="Ago";
 		}
 		else if(mes==9)
 		{
-			espa="Septiembre";
+			espa="Sep";
 		}
 		else if(mes==10)
 		{
-			espa="Octubre";
+			espa="Oct";
 		}
 		else if(mes==11)
 		{
-			espa="Noviembre";
+			espa="Nov";
 		}
 		else if(mes==12)
 		{
-			espa="Diciembre";
+			espa="Dic";
 		}
 
 		return espa;
