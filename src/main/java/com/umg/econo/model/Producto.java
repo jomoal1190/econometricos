@@ -37,21 +37,35 @@ public class Producto {
 	@JsonBackReference
 	@JoinColumn(name="id_categoria")
 	private Categoria categoria;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonBackReference
+	@JoinColumn(name="id_proveedor")
+	private Proveedor proveedor;
 	
 	
 	public Producto() {}
 	
-	
-	
-	public Producto(Long id, String nombre, Double precio, Set<Registro> registros, Categoria categoria) {
+
+	public Producto(Long id, String nombre, Double precio, Set<Registro> registros, Categoria categoria,
+			Proveedor proveedor) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.registros = registros;
 		this.categoria = categoria;
+		this.proveedor = proveedor;
 	}
 
+
+	public Proveedor getProveedor() {
+		return proveedor;
+	}
+
+
+	public void setProveedor(Proveedor proveedor) {
+		this.proveedor = proveedor;
+	}
 
 
 	public Categoria getCategoria() {
