@@ -51,6 +51,7 @@ public class FormarRegistros {
 	@Autowired  RegistroRepository repositoryRegistro;
 	@Autowired Utileria utileria;
 	@Autowired CategoriaRepository categoriaRepository;
+	@Autowired ProductosRepository productoRepository;
 	
 	@RequestMapping(value="/getRegistros", method=RequestMethod.GET)
     public String customerForm(Model model) {
@@ -90,6 +91,15 @@ public class FormarRegistros {
 		return anio;
 	}
 	
+	@RequestMapping(value="/getProductos", method=RequestMethod.GET)
+	public @ResponseBody List<Producto> getProductos(HttpServletRequest request, HttpServletResponse response)
+	{
+		Long idCategoria = Long.parseLong(request.getParameter("categoria"));
+		logger.info("Categoria id "+idCategoria);
+		List<Producto> productos = productoRepository.findByCategoria(idCategoria);
+		return productos;
+	}
+	
 	@RequestMapping(value = "/consultarInfo", method = RequestMethod.POST)
 	 public String consultarInfo(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
 		
@@ -100,9 +110,7 @@ public class FormarRegistros {
 		List<Registro> RegistroMaximo = repositoryRegistro.findByRegistrosMaximo();
 		anio = formato.format(RegistroMaximo.get(0).getFechaCreacion());
 		valorAnio = Integer.parseInt(anio.split("/")[0]);
-		 
 		
-	
 		List<Map> respuesta=servicioWeb.getConsulta(request, response);
 		
 		//---------------------------------------------------------------------------------------------

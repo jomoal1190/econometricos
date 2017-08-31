@@ -53,8 +53,16 @@ jQuery(function($){
 							opcion : {
 								required : true,
 							},
-							producto : {
-								required : true,
+							categoria : {
+								required : function(element) {
+						        	if($("#opcion").val()==1)
+					        		{
+					        		return true;
+					        		}
+						        	else{
+						        		return false;
+						        	}
+								}
 								},
 							
 							metodo : {

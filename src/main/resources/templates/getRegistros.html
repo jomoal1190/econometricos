@@ -149,7 +149,7 @@
 			    	</tr>
 			    	<tr id="categorias" style="display: none">
 			    		<td>
-			    		<span>Seleccione un producto</span>
+			    		<span>Seleccione una categoria de productos</span>
 			    		</td>
 			    		<td>
 			    			<select  style="display: block;"  name="categoria" id="categoria">
@@ -165,7 +165,6 @@
 			    		<td>
 			    			<select  style="display: block;"  name="producto" id="producto">
 			    			<option value="">Seleccionar...</option>
-						    <option th:each="product : ${producto}" th:value="${product.id}" th:text="${product.nombre}"></option>
 						    </select>
 			    		</td>
 			    	</tr>
@@ -295,6 +294,22 @@
  	    	
  	    	
     		});
+    	 $( "#categoria" ).change(function() {
+    		 var categoria = $("#categoria").val(); 
+    		 console.log(categoria);
+    		 var url = "/getProductos";
+    		 $.ajax({                        
+	    		    type: "GET",                 
+	    		    url: url,                     
+	    		    data:{categoria: categoria},
+	    		    success: function(data)             
+	    	           {
+	    	             console.log(data);
+	    	        
+	    	           }
+	    		   });
+    		 
+    	 }
     	 
     	 
     	
