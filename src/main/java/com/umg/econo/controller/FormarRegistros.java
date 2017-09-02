@@ -30,6 +30,7 @@ import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Categoria;
 import com.umg.econo.model.Producto;
+import com.umg.econo.model.Proveedor;
 import com.umg.econo.model.Registro;
 import com.umg.econo.objetosCalculos.CalculoFuncionCuadratica;
 import com.umg.econo.objetosCalculos.CalculoMinimosCuadrados;
@@ -39,6 +40,7 @@ import com.umg.econo.objetosCalculos.RespuestaMinimos;
 import com.umg.econo.objetosCalculos.RespuestaRegresionLineal;
 import com.umg.econo.repository.CategoriaRepository;
 import com.umg.econo.repository.ProductosRepository;
+import com.umg.econo.repository.ProveedoresRepository;
 import com.umg.econo.repository.RegistroRepository;
 import com.umg.econo.service.ServiceWeb;
 
@@ -52,6 +54,7 @@ public class FormarRegistros {
 	@Autowired Utileria utileria;
 	@Autowired CategoriaRepository categoriaRepository;
 	@Autowired ProductosRepository productoRepository;
+	@Autowired ProveedoresRepository proveedorRepository;
 	
 	@RequestMapping(value="/getRegistros", method=RequestMethod.GET)
     public String customerForm(Model model) {
@@ -91,13 +94,33 @@ public class FormarRegistros {
 		return anio;
 	}
 	
+	@RequestMapping(value="/getLastRegistro", method=RequestMethod.GET)
+	public @ResponseBody Integer getLastRegisterA(HttpServletRequest request, HttpServletResponse response)
+	{
+		SimpleDateFormat formato = new SimpleDateFormat("yyyy/MM/dd");
+		List<Registro> RegistroMaximo = repositoryRegistro.findByRegistrosMaximo();
+		String anio = formato.format(RegistroMaximo.get(0).getFechaCreacion());
+		Integer valorAnio = Integer.parseInt(anio.split("/")[0]);
+		return valorAnio;
+	}
+	
 	@RequestMapping(value="/getProductos", method=RequestMethod.GET)
 	public @ResponseBody List<Producto> getProductos(HttpServletRequest request, HttpServletResponse response)
 	{
+		Long idProveedor = Long.parseLong(request.getParameter("proveedor"));
+		logger.info("Proveedor "+idProveedor);
+		List<Producto> productos = productoRepository.findByProveedorId(idProveedor);
+		
+		return productos;
+	}
+	@RequestMapping(value="/getProveedores", method=RequestMethod.GET)
+	public @ResponseBody List<Proveedor> getProveedores(HttpServletRequest request, HttpServletResponse response)
+	{
 		Long idCategoria = Long.parseLong(request.getParameter("categoria"));
 		logger.info("Categoria id "+idCategoria);
-		List<Producto> productos = productoRepository.findByCategoria(idCategoria);
-		return productos;
+		List<Proveedor> proveedor = proveedorRepository.findByCategoria(idCategoria);
+		logger.info("Cantidad de proveedores "+proveedor.size());
+		return proveedor;
 	}
 	
 	@RequestMapping(value = "/consultarInfo", method = RequestMethod.POST)
@@ -185,7 +208,7 @@ public class FormarRegistros {
 					{
 						rango = 5;
 					}
-					
+					logger.info("Rango "+rango);
 					Integer sumaAnio=0;
 //					  ------------ LLAMADA A METODO FUNCION CUADRATICA
 				

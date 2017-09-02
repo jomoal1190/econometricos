@@ -14,7 +14,8 @@ import com.umg.econo.model.Producto;
 public interface ProductosRepository extends CrudRepository<Producto, Long>{
 	
 	Producto findById(Long id);
-	List<Producto> findByCategoria(Long id);
+	
+	List<Producto> findByProveedorId(Long id);
 	
 	
 

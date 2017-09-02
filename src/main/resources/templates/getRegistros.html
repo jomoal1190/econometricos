@@ -151,10 +151,21 @@
 			    		<td>
 			    		<span>Seleccione una categoria de productos</span>
 			    		</td>
-			    		<td>
+			    		<td colspan="2">
 			    			<select  style="display: block;"  name="categoria" id="categoria">
 			    			<option value="">Seleccionar...</option>
 						    <option th:each="cate : ${categoria}" th:value="${cate.id}" th:text="${cate.descripcion}"></option>
+						    </select>
+			    		</td>
+			    	</tr>
+			    	<tr id="proveedores" style="display: none">
+			    		<td>
+			    		<span>Seleccione una proveedor</span>
+			    		</td>
+			    		<td colspan="2">
+			    			<select  style="display: block;"  name="proveedor" id="proveedor">
+			    			<option value="">Seleccionar...</option>
+						    
 						    </select>
 			    		</td>
 			    	</tr>
@@ -162,7 +173,7 @@
 			    		<td>
 			    		<span>Seleccione un producto</span>
 			    		</td>
-			    		<td>
+			    		<td colspan="2">
 			    			<select  style="display: block;"  name="producto" id="producto">
 			    			<option value="">Seleccionar...</option>
 						    </select>
@@ -275,42 +286,87 @@
      	lStart = document.getElementById('l-start'),
      	lEnd = document.getElementById('l-end');
          
-    	 $( "#producto" ).change(function() {
-    		var producto = $("#producto").val(); 
- 	    	console.log(producto)
- 	    	var url = "/getLastRegistreProduct";
- 	    	var resultado;
- 	    	$.ajax({                        
- 	    		    type: "GET",                 
- 	    		    url: url,                     
- 	    		    data:{producto: producto},
- 	    		    success: function(data)             
- 	    	           {
- 	    	             console.log(data);
- 	    	            slider.noUiSlider.set([null, data]);
- 	    	           }
- 	    		   });
- 	    	
- 	    	
- 	    	
-    		});
+    	 
     	 $( "#categoria" ).change(function() {
+    		 $("#proveedores").css("display", "none");
     		 var categoria = $("#categoria").val(); 
     		 console.log(categoria);
-    		 var url = "/getProductos";
-    		 $.ajax({                        
-	    		    type: "GET",                 
-	    		    url: url,                     
-	    		    data:{categoria: categoria},
-	    		    success: function(data)             
-	    	           {
-	    	             console.log(data);
-	    	        
-	    	           }
-	    		   });
+    		 var proveedor = $("#proveedor"); 
+    		 proveedor.empty();
+    		 var url = "/getProveedores";
+    		 if (categoria != "")
+    			 {
+    			 $.ajax({                        
+ 	    		    type: "GET",                 
+ 	    		    url: url,                     
+ 	    		    data:{categoria: categoria},
+ 	    		    success: function(data)             
+ 	    	           {
+ 	    		    	proveedor.append('<option value="">Seleccionar</option>');
+ 	    		   		if (data) {
+ 	    		   			$("#proveedores").css("display", "table-row");
+                 			for (i in data) {
+                     				proveedor.append('<option value="' + data[i].id + '">' + data[i].nombre+ '</option>');
+                 				};
+ 	    	             console.log(data);
+ 	    	           }
+ 	    	           }
+ 	    		   });
+    			 }
     		 
-    	 }
-    	 
+    		 
+    	 });
+    	 $( "#proveedor" ).change(function() {
+    		 $("#productos").css("display", "none");
+    		 var proveedor = $("#proveedor").val(); 
+    		 console.log("dato "+proveedor);
+    		 var producto = $("#producto");  
+    		 producto.empty();
+    		 var url = "/getProductos";
+    		 if(proveedor!="")
+    			 {
+    			 $.ajax({                        
+ 	    		    type: "GET",                 
+ 	    		    url: url,                     
+ 	    		    data:{proveedor: proveedor},
+ 	    		    success: function(data)             
+ 	    	           {
+ 	    		    	producto.append('<option value="">Seleccionar</option>');
+ 	    		    	console.log(data);
+ 	    		   		if (data) {
+ 	    		   			$("#productos").css("display", "table-row");
+                 			for (i in data) {
+                 				producto.append('<option value="' + data[i].id + '">' + data[i].nombre+ '</option>');
+                 				};
+ 	    	             
+ 	    	           }
+ 	    	           }
+ 	    		   });
+    			 
+    			 }
+    		
+    		 
+    	 });
+    	 $( "#producto" ).change(function() {
+     		var producto = $("#producto").val(); 
+  	    	console.log(producto)
+  	    	var url = "/getLastRegistreProduct";
+  	    	var resultado;
+  	    	if(producto != "")
+  	    		{
+  	    		$.ajax({                        
+  	    		    type: "GET",                 
+  	    		    url: url,                     
+  	    		    data:{producto: producto},
+  	    		    success: function(data)             
+  	    	           {
+  	    	             console.log(data);
+  	    	            slider.noUiSlider.set([null, data]);
+  	    	           }
+  	    		   });
+  	    		}
+  	    	
+     		});
     	 
     	
          
@@ -324,9 +380,21 @@
     		    	{
     		    	$("#categorias").css("display", "table-row");
     		    	
+    		    	
     		    	}
     		    else{
     		    	$("#categorias").css("display", "none");
+    		    	 $("#proveedores").css("display", "none");
+    		    	 $("#productos").css("display", "none");
+    		    	 $.ajax({                        
+    	  	    		    type: "GET",                 
+    	  	    		    url: "/getLastRegistro",                     
+    	  	    		    success: function(data)             
+    	  	    	           {
+    	  	    	             console.log(data);
+    	  	    	            slider.noUiSlider.set([null, data]);
+    	  	    	           }
+    	  	    		   });
     		    }
     		});
     	 
