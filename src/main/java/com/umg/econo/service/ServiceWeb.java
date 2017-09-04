@@ -1,5 +1,6 @@
 package com.umg.econo.service;
 
+import java.text.ParseException;
 import java.util.List;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Empleado;
+import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
 
@@ -29,5 +31,7 @@ public interface ServiceWeb {
 	public String deleteEmpleado(HttpServletRequest request, HttpServletResponse response);
 	public String updateEmpleado(HttpServletRequest request, HttpServletResponse response);
 	public Empleado getEmpleado(HttpServletRequest request, HttpServletResponse response);
+	public List<PeriodoDeAfecto> getAllPeriodos();
+	public String createPeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException;
 
 }

@@ -22,7 +22,7 @@ import com.umg.econo.serviceImpl.ServiceWebImpl;
 public class EmpleadoController {
 	@Autowired ServiceWeb servicioWeb;
 	private static final String CODIGO_CORRECTO = "001";
-	private static final String CODIGO_INCORRECTO= "001";
+	private static final String CODIGO_INCORRECTO= "000";
 	private static Logger logger = LoggerFactory.getLogger(EmpleadoController.class);
 	
 	@RequestMapping(value="/createEmpleado", method=RequestMethod.GET)

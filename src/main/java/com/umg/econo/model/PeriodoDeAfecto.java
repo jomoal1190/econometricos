@@ -19,46 +19,60 @@ public class PeriodoDeAfecto {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="id")
 	private Long id;
-	@Column(name="mes")
-	private Integer mes;
-	@Column(name="anio")
-	private Integer anio;
+	@Column(name="descripcion")
+	private String descripcion;
+	@Column(name="inicio")
+	@Type(type="date")
+	private Date inicio;
+	@Column(name="fin")
+	@Type(type="date")
+	private Date fin;
 	@Column(name="monto")
-	private Double monto;
-	
-	
+	private Float monto;
 	
 	public PeriodoDeAfecto() {
 	}
-	public PeriodoDeAfecto(Long id, Integer mes, Integer anio, Double monto) {
+	public PeriodoDeAfecto(Long id, String descripcion, Date inicio, Date fin, Float monto) {
 		super();
 		this.id = id;
-		this.mes = mes;
-		this.anio = anio;
+		this.descripcion = descripcion;
+		this.inicio = inicio;
+		this.fin = fin;
 		this.monto = monto;
 	}
+	public String getDescripcion() {
+		return descripcion;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+	public Date getInicio() {
+		return inicio;
+	}
+
+	public void setInicio(Date inicio) {
+		this.inicio = inicio;
+	}
+
+	public Date getFin() {
+		return fin;
+	}
+
+	public void setFin(Date fin) {
+		this.fin = fin;
+	}
+
+	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Integer getMes() {
-		return mes;
-	}
-	public void setMes(Integer mes) {
-		this.mes = mes;
-	}
-	public Integer getAnio() {
-		return anio;
-	}
-	public void setAnio(Integer anio) {
-		this.anio = anio;
-	}
-	public Double getMonto() {
+	public Float getMonto() {
 		return monto;
 	}
-	public void setMonto(Double monto) {
+	public void setMonto(Float monto) {
 		this.monto = monto;
 	}
 	

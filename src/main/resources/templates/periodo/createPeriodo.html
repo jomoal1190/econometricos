@@ -48,10 +48,18 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"></link>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css"></link>
-    <link rel="stylesheet" type="text/css" media="all" th:href="@{css/styles.css}"></link>
-    <link rel="stylesheet" type="text/css" media="all" th:href="@{css/materialize.min.css}"></link>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{../css/styles.css}"></link>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{../css/materialize.min.css}"></link>
+     <link rel="stylesheet" type="text/css" media="all" th:href="@{../css/tooltipster.bundle.min.css}"></link>
+  
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+     <script type="text/javascript" th:src="@{../js/materialize.js}"></script>
+     <script type="text/javascript" th:src="@{../js/tooltipster.bundle.min.js}"></script>
     
-   <script type="text/javascript" th:src="@{js/materialize.min.js}"></script>
+     <script type="text/javascript" th:src="@{../js/validateForm.js}"></script>
+    
+     
+  
     <style>
     #view-source {
       position: fixed;
@@ -67,16 +75,13 @@
   </head>
   <body>
   
-   <script  src="js/materialize.min.js"></script>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title">Inicio</span>
+          <span class="mdl-layout-title">Carga</span>
           <div class="mdl-layout-spacer"></div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-              <i class="material-icons">search</i>
-            </label>
+            
             <div class="mdl-textfield__expandable-holder">
               <input class="mdl-textfield__input" type="text" id="search"></input>
               <label class="mdl-textfield__label" for="search">Enter your query...</label>
@@ -103,13 +108,12 @@
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
             <a class="mdl-navigation__link" href="/"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Inicio</a>
-          <a class="mdl-navigation__link" href="/empleado/listEmpleado"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">account_circle</i>Agregar Empleado</a>
-          <a class="mdl-navigation__link" href="/periodo/listPeriodo"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">date_range</i>Agregar Periodo</a>
+         <a class="mdl-navigation__link" href="/empleado/listEmpleado"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">account_circle</i>Agregar Empleado</a>
           <a class="mdl-navigation__link" href="/insertRegistros"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_box</i>Agregar Registro</a>
           <a class="mdl-navigation__link" href="/unploadExcel"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_circle</i>Agregar Masivamente</a>
-          <a class="mdl-navigation__link" href="/getRegistros"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">input</i>Realizar Consultas</a>
-		<a class="mdl-navigation__link" href="/respuesta"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">multiline_chart</i>Minimos Cuadrados</a>          
-		<a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">show_chart</i>Dispersion</a>
+          <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">input</i>Realizar Consultas</a>
+          <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">multiline_chart</i>Minimos Cuadrados</a>
+          <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">show_chart</i>Dispersion</a>
 
 
           <div class="mdl-layout-spacer"></div>
@@ -117,55 +121,107 @@
         </nav>
       </div>
       <main class="mdl-layout__content mdl-color--grey-100">
-      
-      	
+     	
 	     <div class="mdl-grid demo-content">
-	     <p style="text-align:center"> <h1>DATOS CARGADOS</h1></p>
-	     <div th:switch="${tipo}" class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid"> 
-	     	<div th:case="1"  style="width: 100%;"> 
-		       <p>PRODUCTOS</p>
-		       <table class="striped" style="width:100%">
-		       	<thead>
-		       	<th>Nombre producto</th>
-		       	<th>Costo Unitario</th>
-		       	</thead>
-		       	<tbody>
-				<tr th:each="obj : ${objeto}">
-				   <td th:text="${obj.nombre}"></td>
-				   <td th:text="${obj.precio}"></td>
-				</tr>
-		       	</tbody>
-		       </table>
-			</div>
-			<div th:case="2" style="width: 100%;"> 
-		       <p>INGRESOS</p>
-		       <table class="striped" style="width:100%">
-		       	<thead>
-		       	<th>Fecha de Creacion</th>
-		       	<th>Cantidada</th>
-		       	<th>Producto</th>
-		       	</thead>
-		       	<tbody>
-				<tr th:each="obj : ${objeto}">
-				
-				   <td th:text="${#dates.format(obj.fechaCreacion, 'dd-MM-yyyy')}"></td>
-				   <td th:text="${obj.cantidad}"></td>
-				   <td th:text="${obj.producto.nombre}"></td>
-				</tr>
-		       	</tbody>
-		       </table>
-			</div>
-			<div th:case="'no'" style="width: 100%;"> 
-		       <p>El archivo de importe no es valido</p>
-			</div>
-			 
-			</div>
-	     
+	     <p style="text-align:center"> <h1>CREACION DE PERIODO DE AFECTO A VENTAS</h1></p>
+	     <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+		        
+		       
+				<form action="#" th:action="@{/createPeriodo}" th:object="${periodo}" method="post" style="width: 100%;" id="formularioCreatePeriodo" name="formularioCreatePeriodo">
+			    <table class="responsive-table" >
+			    <thead>
+			    <th colspan="4">Informacion del periodo que afecta a las ventas</th>
+			    </thead>
+			    <tbody>
+			    	<tr>
+			    		<td><span>Descripción del periodo de afecto</span>
+			    		</td>
+			    		<td colspan="2">
+			    			<input type="text" name="descripcion" id="descripcion"/>
+			    		</td>
+			    	</tr>
+			    	<tr>
+			    		<td colspan="1">
+			    		<span>Indique la fecha de inicio del periodo</span>
+			    		</td>
+			    		<td>
+			    		<input type="text" name="inicio" class="datepicker" id="inicio"/>
+			    		</td>
+			    		
+			    	</tr>
+			    	<tr>
+			    		<td colspan="1">
+			    		<span>Indique la fecha fin del periodo</span>
+			    		</td>
+			    		<td>
+			    		<input type="text" name="fin" class="datepicker" id="fin"/>
+			    		</td>
+			    		
+			    	</tr>
+			    	<tr id="porcentajes">
+			    		<td   >
+			    		<span>Ingrese el porcentaje observado</span>
+			    		</td>
+			    		<td colspan="2">
+			    			<input type="text" name="porcentaje" id="porcentaje"/>
+			    		</td>
+			    	</tr>
+			    	
+			    	<tr>
+			    	<td></td>
+			    		<td style="text-align: right;">
+			    		<input class="btn waves-effect waves-light" type="button" value="Guardar" id="enviarEmpleado" />
+			    		</td>
+			    	</tr>
+			    </tbody>
+			    
+			    </table>
+			    </form>
+			    </div>
           </div>
       </main>
     </div>
+    
       
-      <a href="https://github.com/google/material-design-lite/blob/mdl-1.x/templates/dashboard/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white">View Source</a>
+      
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+     <script th:inline="javascript">
+     $('.datepicker').pickadate({
+   	  monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+   	  weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+   	  today: 'Hoy',
+   	  clear: 'Limpiar',
+   	  format:'dd/mm/yyyy',
+   	  formatSubmit: 'yyyy/mm/dd',
+       selectMonths: true, // Creates a dropdown to control month
+       selectYears: 15, // Creates a dropdown of 15 years to control year,
+       close: 'Cerrar',
+       closeOnSelect: false // Close upon selecting a date,
+     });
+     
+     
+     
+     $(document).ready(function() {
+    	 $( "#opcion" ).change(function() {
+    		 console.log($("#opcion").val());
+        	 if ($("#opcion").val() == 3)
+        		 {
+        		 $("#porcentajes").css("display", "none");
+        	
+        		 }
+        	 else{
+        		
+        		 $("#porcentajes").css("display", "table-row");
+        	 }
+         });
+    	 $('#enviarEmpleado').click(function(){
+    		 $("#formularioCreatePeriodo").submit();
+ 			}); 
+    	 
+ 
+    	});
+     
+     
+     </script>
   </body>
 </html>

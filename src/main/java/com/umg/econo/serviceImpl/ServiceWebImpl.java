@@ -1,6 +1,9 @@
 package com.umg.econo.serviceImpl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +21,11 @@ import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Empleado;
+import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
 import com.umg.econo.repository.EmpleadoRepository;
+import com.umg.econo.repository.PeriodoRepository;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.RegistroRepository;
 import com.umg.econo.service.ServiceWeb;
@@ -37,6 +42,7 @@ public class ServiceWebImpl implements ServiceWeb{
 	@Autowired private ProductosRepository productosRepository;
 	@Autowired private Utileria utileria;
 	@Autowired private EmpleadoRepository empleadoRepository;
+	@Autowired private PeriodoRepository periodoRepository;
 	
 	@Override
 	public RespuestaParametroDao<Registro> getAllRegistros(ObtenerParametroGenerico<Registro> registro) {
@@ -287,6 +293,42 @@ public class ServiceWebImpl implements ServiceWeb{
 		Empleado empleado = empleadoRepository.findOne(id);
 		
 		return empleado;
+	}
+	@Override
+	public List<PeriodoDeAfecto> getAllPeriodos() {
+		
+		List<PeriodoDeAfecto> respuesta = periodoRepository.findAll();
+		return respuesta;
+	}
+	@Override
+	public String createPeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String respuesta = "";
+		
+		
+		try
+		{
+			String descripcion = request.getParameter("descripcion");
+			SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+			Date inicio = formato.parse(request.getParameter("inicio"));
+			Date fin = formato.parse(request.getParameter("fin"));
+			Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+			
+			PeriodoDeAfecto periodo = new PeriodoDeAfecto();
+			periodo.setDescripcion(descripcion);
+			periodo.setInicio(inicio);
+			periodo.setFin(fin);
+			periodo.setMonto(monto);
+			
+			periodoRepository.save(periodo);
+			respuesta = CODIGO_CORRECTO;
+			
+		}catch(Exception e)
+		{
+			logger.error("Error al guardar periodo ",e);
+			respuesta = CODIGO_INCORRECTO;
+		}
+		
+		return respuesta;
 	}
 	
 	
