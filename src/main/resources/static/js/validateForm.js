@@ -18,6 +18,19 @@ jQuery(function($){
 						position: 'right'  // display the tips to the right of the element
 				    });
 					
+					$("input[name], select[name], span.fancyFiled", "#formularioCreateEmpleado").tooltipster({ 
+						trigger: 'custom', // default is 'hover' which is no good here
+						onlyOne: false,    // allow multiple tips to be open at a time
+						position: 'right'  // display the tips to the right of the element
+				    });
+					
+
+					$("input[name], select[name], span.fancyFiled", "#formularioUpdateEmpleado").tooltipster({ 
+						trigger: 'custom', // default is 'hover' which is no good here
+						onlyOne: false,    // allow multiple tips to be open at a time
+						position: 'right'  // display the tips to the right of the element
+				    });
+					
 					
 					$.validator.addMethod("phoneNumber", function(value, element){
 						return this.optional(element) || /^[0-9]{4,4}-[0-9]{4,4}$/.test(value);
@@ -130,6 +143,143 @@ jQuery(function($){
 				        }
 					});
 					
+					
+					$("#formularioCreateEmpleado").validate({
+						rules : {
+							nombre : {
+								required : true,
+							},
+							opcion : {
+								required : true,
+								}
+						},
+						messages : {
+							nombre : {
+								required : msgRequiredGeneric,
+							},
+							opcion : {
+								required : msgRequiredGeneric,
+							},
+							
+						},
+						errorPlacement: function (error, element) {
+							if($(element).is("select")){
+								$(element).parent(".selectBox").addClass("error");
+							}
+							var isInputFile = $(element).is("input[type='file']");
+							if (isInputFile) {
+								$(element).parent(".fancyFiled").addClass("error");
+							}
+							var lastError = $(element).data("lastError"),
+			                newError = $(error).text();
+	
+				            $(element).data("lastError", newError);
+		
+				            if(newError !== "" && newError !== lastError){
+				            	if (isInputFile) {
+				            		$(element).parent(".fancyFiled").tooltipster("content", newError);
+					                $(element).parent(".fancyFiled").tooltipster("enable");
+					                $(element).parent(".fancyFiled").tooltipster("show");
+				            	} else {
+				            		$(element).tooltipster("content", newError);
+					                $(element).tooltipster("enable");
+					                $(element).tooltipster("show");
+				            	}
+				            	
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formularioCreateEmpleado").focus(function(){
+									$(this).tooltipster("show");
+								});
+				                
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formularioCreateEmpleado").blur(function(){
+									$(this).tooltipster("hide");
+								});
+				            }
+				        },
+				        success: function (label, element) {
+				        	var isInputFile = $(element).is("input[type='file']");
+				        	if($(element).is("select")){
+								$(element).parent(".selectBox").removeClass("error");
+								$(element).tooltipster("disable");
+							}
+				        	if (isInputFile) {
+								$(element).parent(".fancyFiled").removeClass("error");
+								$(element).parent(".fancyFiled").tooltipster("hide");
+						        $(element).parent(".fancyFiled").tooltipster("disable");
+							}
+				            $(element).tooltipster("hide");
+				            $(element).tooltipster("disable");
+				        }
+					});
+					
+					
+					$("#formularioUpdateEmpleado").validate({
+						rules : {
+							nombre : {
+								required : true,
+							},
+							opcion : {
+								required : true,
+								}
+						},
+						messages : {
+							nombre : {
+								required : msgRequiredGeneric,
+							},
+							opcion : {
+								required : msgRequiredGeneric,
+							},
+							
+						},
+						errorPlacement: function (error, element) {
+							if($(element).is("select")){
+								$(element).parent(".selectBox").addClass("error");
+							}
+							var isInputFile = $(element).is("input[type='file']");
+							if (isInputFile) {
+								$(element).parent(".fancyFiled").addClass("error");
+							}
+							var lastError = $(element).data("lastError"),
+			                newError = $(error).text();
+	
+				            $(element).data("lastError", newError);
+		
+				            if(newError !== "" && newError !== lastError){
+				            	if (isInputFile) {
+				            		$(element).parent(".fancyFiled").tooltipster("content", newError);
+					                $(element).parent(".fancyFiled").tooltipster("enable");
+					                $(element).parent(".fancyFiled").tooltipster("show");
+				            	} else {
+				            		$(element).tooltipster("content", newError);
+					                $(element).tooltipster("enable");
+					                $(element).tooltipster("show");
+				            	}
+				            	
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formularioUpdateEmpleado").focus(function(){
+									$(this).tooltipster("show");
+								});
+				                
+				                $("input[name].error, select[name].error, span.fancyFiled", "#formularioUpdateEmpleado").blur(function(){
+									$(this).tooltipster("hide");
+								});
+				            }
+				        },
+				        success: function (label, element) {
+				        	var isInputFile = $(element).is("input[type='file']");
+				        	if($(element).is("select")){
+								$(element).parent(".selectBox").removeClass("error");
+								$(element).tooltipster("disable");
+							}
+				        	if (isInputFile) {
+								$(element).parent(".fancyFiled").removeClass("error");
+								$(element).parent(".fancyFiled").tooltipster("hide");
+						        $(element).parent(".fancyFiled").tooltipster("disable");
+							}
+				            $(element).tooltipster("hide");
+				            $(element).tooltipster("disable");
+				        }
+					});
+					
+					
 					$("#enviar").click(function(){
 						var formulario = $("#formulario");
 						console.log("Producto"+$("#producto").val());
@@ -140,6 +290,26 @@ jQuery(function($){
 							return false;
 						}
 					});
+					$("#enviarEmpleado").click(function(){
+						var formulario = $("#formularioCreateEmpleado");
+						
+						if($(formulario).valid()){
+							$(formulario).submit();
+						}else{
+							return false;
+						}
+					});
+					
+					$("#updateEmpleado").click(function(){
+						var formulario = $("#formularioUpdateEmpleado");
+						
+						if($(formulario).valid()){
+							$(formulario).submit();
+						}else{
+							return false;
+						}
+					});
+					
 					
 				});
 		

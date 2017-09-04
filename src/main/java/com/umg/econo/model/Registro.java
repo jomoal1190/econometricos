@@ -29,18 +29,36 @@ public class Registro {
 	@JsonBackReference
 	@JoinColumn(name="id_producto")
 	private Producto producto;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonBackReference
+	@JoinColumn(name="id_empleado")
+	private Empleado empleado;
 	
 	
 	public Registro() {}
 	
 	
-	public Registro(Long id, Date fechaCreacion, Integer cantidad, Double valor, Producto producto) {
+	public Registro(Long id, Date fechaCreacion, Integer cantidad, Producto producto, Empleado empleado) {
 		super();
 		this.id = id;
 		this.fechaCreacion = fechaCreacion;
 		this.cantidad = cantidad;
 		this.producto = producto;
+		this.empleado = empleado;
 	}
+
+	
+
+	public Empleado getEmpleado() {
+		return empleado;
+	}
+
+
+	public void setEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
+
+
 	public Long getId() {
 		return id;
 	}

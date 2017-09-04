@@ -31,9 +31,11 @@ import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.model.Categoria;
 import com.umg.econo.model.Producto;
+import com.umg.econo.model.Proveedor;
 import com.umg.econo.model.Registro;
 import com.umg.econo.repository.CategoriaRepository;
 import com.umg.econo.repository.ProductosRepository;
+import com.umg.econo.repository.ProveedoresRepository;
 import com.umg.econo.service.ServiceWeb;
 
 
@@ -49,6 +51,7 @@ public class ImportarController {
 	@Autowired ServiceWeb servicioWeb;
 	@Autowired ProductosRepository productoRepository;
 	@Autowired CategoriaRepository categoriaRepository;
+	@Autowired ProveedoresRepository proveedorRepository;
 	
 	
 	@PostMapping("/unploadExcel") 
@@ -80,7 +83,7 @@ public class ImportarController {
                 int numRow = nextRow.getRowNum(); 
                 int ultimaColumna=nextRow.getLastCellNum();
                 Producto producto = new Producto();
-                if(ultimaColumna<=3)
+                if(ultimaColumna==4)
                 {
                 	while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
@@ -103,6 +106,14 @@ public class ImportarController {
         	             			logger.info("Nombre de la categoria "+categoria.getDescripcion());
         	             			producto.setCategoria(categoria);
         	             		}
+        	             		else if(numeroCelda==3)
+        	             		{
+        	             			Integer id= (int) cell.getNumericCellValue();
+        	             			Proveedor proveedor = proveedorRepository.finById(Long.parseLong(id.toString()));
+        	             			logger.info("Nombre del proveedor "+proveedor.getNombre());
+        	             			producto.setProveedor(proveedor);
+        	             		}
+        	             		
         	             	 
         	             		 if(!lista.contains(producto)) {
         	                    	 lista.add(producto);

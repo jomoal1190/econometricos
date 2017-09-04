@@ -1,5 +1,6 @@
 package com.umg.econo.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +17,10 @@ import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
+import com.umg.econo.model.Empleado;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
+import com.umg.econo.repository.EmpleadoRepository;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.RegistroRepository;
 import com.umg.econo.service.ServiceWeb;
@@ -33,6 +36,8 @@ public class ServiceWebImpl implements ServiceWeb{
 	@Autowired private RegistroRepository registroRepository;
 	@Autowired private ProductosRepository productosRepository;
 	@Autowired private Utileria utileria;
+	@Autowired private EmpleadoRepository empleadoRepository;
+	
 	@Override
 	public RespuestaParametroDao<Registro> getAllRegistros(ObtenerParametroGenerico<Registro> registro) {
 		RespuestaParametroDao<Registro> respuesta = new RespuestaParametroDao<Registro>();
@@ -193,16 +198,97 @@ public class ServiceWebImpl implements ServiceWeb{
 			
 		}
 		
-		
-		 
 		logger.info("Recibio registros "+respuesta.size());
 		
-
-		
+		return respuesta;
+	}
+	@Override
+	public String insertEmpleado(HttpServletRequest request, HttpServletResponse response) {
+		 String nombre = request.getParameter("nombre");
+		 Float porcentaje=(float) 0;
+		 if(!request.getParameter("porcentaje").isEmpty())
+		 {
+			 porcentaje = Float.parseFloat(request.getParameter("porcentaje"));
+		 }
+		 String respuesta ="";
+		 if(request.getParameter("opcion").equals("1"))
+		 {
+			 porcentaje = porcentaje*1;
+		 }
+		 else {
+			 porcentaje = porcentaje*-1;
+		 }
+		 
+		 Empleado newEmpleado = new Empleado();
+		 newEmpleado.setNombre(nombre);
+		 newEmpleado.setPorcentaje(porcentaje);
+		 try {
+			 empleadoRepository.save(newEmpleado);
+			 respuesta = CODIGO_CORRECTO;
+		 }catch(Exception e)
+		 {
+			 logger.error("Error al insertar empleado",e);
+			 respuesta = CODIGO_INCORRECTO;
+		 }
+		 
+		return respuesta;
+	}
+	@Override
+	public List<Empleado> getAllEmpleados() {
+		List<Empleado> respuesta = new ArrayList<Empleado>();
+				respuesta = (List<Empleado>) empleadoRepository.findAll();
+		return respuesta;
+	}
+	@Override
+	public String deleteEmpleado(HttpServletRequest request, HttpServletResponse response) {
+		Long id= Long.parseLong(request.getParameter("id"));
+		Empleado empleado = new Empleado();
+		empleado.setId(id);
+		String respuesta ="";
+		try
+		{
+			respuesta =CODIGO_CORRECTO;
+			empleadoRepository.delete(empleado);
+		}catch(Exception e)
+		{
+			logger.error("Error al eliminar empleado",e);
+			respuesta = CODIGO_INCORRECTO;
+		}
 		
 		
 		
 		return respuesta;
 	}
+	@Override
+	public String updateEmpleado(HttpServletRequest request, HttpServletResponse response) {
+		Long id= Long.parseLong(request.getParameter("id"));
+		String nombre = request.getParameter("nombre");
+		Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+		String respuesta="";
+		Empleado empleado = new Empleado();
+		empleado.setId(id);
+		empleado.setNombre(nombre);
+		empleado.setPorcentaje(monto);
+		
+		try {
+			empleadoRepository.save(empleado);
+			respuesta = CODIGO_CORRECTO;
+		} catch (Exception e) {
+			logger.error("Error al actualizar empleado");
+			respuesta = CODIGO_INCORRECTO;
+			
+		}
+		
+		return respuesta;
+	}
+	@Override
+	public Empleado getEmpleado(HttpServletRequest request, HttpServletResponse response) {
+		Long id= Long.parseLong(request.getParameter("id"));
+		Empleado empleado = empleadoRepository.findOne(id);
+		
+		return empleado;
+	}
+	
+	
 
 }

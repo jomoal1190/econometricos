@@ -164,7 +164,7 @@ public class FormarRegistros {
 					
 					for(Map mapa: respuesta)
 					{
-						Float anioR = Float.parseFloat(mapa.get("anio").toString());
+						Integer anioR = Integer.parseInt(mapa.get("anio").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
 						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
@@ -177,11 +177,11 @@ public class FormarRegistros {
 						
 						//AGREGANDO CAMPOS PARA FUNCION CUADRATICA PRUEBA 1
 						CalculoFuncionCuadratica cuadratica = new CalculoFuncionCuadratica();
-						cuadratica.setX(anioR);
+						cuadratica.setX(Float.parseFloat(anioR.toString()));
 						cuadratica.setY(total);
-						cuadratica.setX2(anioR*anioR);
-						cuadratica.setX3(anioR*anioR*anioR);
-						cuadratica.setX4(anioR*anioR*anioR*anioR);
+						cuadratica.setX2(Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString()));
+						cuadratica.setX3(Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString()));
+						cuadratica.setX4(Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString()));
 						cuadratica.setXy(anioR*total);
 						cuadratica.setX2y(anioR*anioR*total);
 						funcionCuadratica.add(cuadratica);						
@@ -217,7 +217,7 @@ public class FormarRegistros {
 						sumaAnio=valorAnio+i;
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(sumaAnio.toString());
-						Float y = (float) (Math.round(resultado.getA()+(resultado.getB()*sumaAnio)+(resultado.getC()*sumaAnio*sumaAnio))) ;				
+						Float y = (float) (Math.round(resultado.getA()+(resultado.getB()*sumaAnio)+(resultado.getC()*sumaAnio))) ;				
 						agregar.setTotal(y);
 						respuestabdProyeccion.add(agregar);
 					}
@@ -299,7 +299,7 @@ public class FormarRegistros {
 			
 			
 			//VALIDACION DE METODO PARA MINIMOS CUADRADOS
-			logger.info("Minimos Cuadrados ");
+			logger.info("Minimos Cuadrados metodo");
 			model.addAttribute("grafica", 2);
 			if(respuesta.isEmpty())
 			{
@@ -320,17 +320,18 @@ public class FormarRegistros {
 					model.addAttribute("textoEncabezado", "Ventas por año");
 					for(Map mapa: respuesta)
 					{
-						Float anioM=Float.parseFloat(mapa.get("anio").toString());
+						Integer anioM=Integer.parseInt(mapa.get("anio").toString());
+						logger.info("anio "+anioM);
 						Float total =Float.parseFloat(mapa.get("total").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
-						agregar.setAnio(mapa.get("anio").toString());
+						agregar.setAnio(anioM.toString());
 						agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
 						agregar.setTotal((float)Math.round(total));
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
 						//AGREAGANDO VALORES A MINIMOS CUADRADOS
 						CalculoMinimosCuadrados nuevoMinimo = new CalculoMinimosCuadrados();
-						nuevoMinimo.setX(anioM);
+						nuevoMinimo.setX(Float.parseFloat(anioM.toString()));
 						nuevoMinimo.setY(total);
 						nuevoMinimo.setXy(anioM*total);
 						Float potencia = (float) (anioM*anioM);
@@ -455,7 +456,7 @@ public class FormarRegistros {
 					
 					for(Map mapa: respuesta)
 					{
-						Float anioR = Float.parseFloat(mapa.get("anio").toString());
+						Integer anioR = Integer.parseInt(mapa.get("anio").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
 						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
@@ -465,9 +466,9 @@ public class FormarRegistros {
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
 						CalculoRegresionLineal regresionCalcular = new CalculoRegresionLineal();
-						regresionCalcular.setX(anioR);
+						regresionCalcular.setX(Float.parseFloat(anioR.toString()));
 						regresionCalcular.setY(total);
-						regresionCalcular.setX2(anioR*anioR);
+						regresionCalcular.setX2(Float.parseFloat(anioR.toString())*Float.parseFloat(anioR.toString()));
 						regresionCalcular.setY2(total*total);
 						regresionCalcular.setXy(anioR*total);
 						regresion.add(regresionCalcular);
@@ -505,7 +506,7 @@ public class FormarRegistros {
 						agregar.setAnio(sumaAnio.toString());
 						
 						Float y = (float) (valores.getValorB1()*sumaAnio+valores.getValorB2());
-						agregar.setTotal(y);
+						agregar.setTotal((float) Math.round(y*100)/100);
 						respuestabdProyeccion.add(agregar);
 					}
 					
@@ -521,13 +522,14 @@ public class FormarRegistros {
 				{
 					model.addAttribute("valorEncabezado", "Meses");
 					model.addAttribute("textoEncabezado", "Ventas por mes");
+					logger.info("tamanio mapa "+respuesta.size());
 					for(Map mapa: respuesta)
 					{
 						Float mes = Float.parseFloat(mapa.get("mes").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
 						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
-						agregar.setAnio(utileria.cambioMesNumero(mapa.get("mes").toString().hashCode()));
+						agregar.setAnio(utileria.cambioMesNumero(mes.intValue()));
 						agregar.setSuma(suma);
 						agregar.setTotal(total);
 						respuestabdProyeccion.add(agregar);
@@ -546,11 +548,14 @@ public class FormarRegistros {
 					
 					
 					Integer tamanioArray = regresion.size();
-					valorAnio=12-regresion.get(tamanioArray-1).getX().intValue();
+				
 					
+					valorAnio=regresion.get(tamanioArray-1).getX().intValue();
+					rango = 12-valorAnio;
 					
 					RespuestaRegresionLineal valores = valoresRegresion(regresion);
 					Integer sumaAnio=0;
+					logger.info("Rango "+rango);
 					for(int i=1; i<=rango; i++)
 					{
 						sumaAnio=valorAnio+i;
@@ -702,7 +707,7 @@ public class FormarRegistros {
 		
 		
         
-		double[][] lhsArray = {{n, sumax, sumax2}, {sumax, sumax2, sumax3}, {sumax2, sumax3, sumax4}};
+		double[][] lhsArray = {{n, sumax, sumax2*n}, {sumax, sumax2, sumax3}, {sumax2, sumax3, sumax4}};
         double[] rhsArray = {sumay, sumaxy, sumax2y};
  
         Matrix lhs = new Matrix(lhsArray);

@@ -11,6 +11,7 @@ import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
+import com.umg.econo.model.Empleado;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
 
@@ -23,5 +24,10 @@ public interface ServiceWeb {
 	public RespuestaGeneralDao insertExcelRegistro(ObtenerParametroGenerico<Registro> producto);
 	public RespuestaGeneralDao insertRegistro(ObtenerParametroGenerico<Registro> registro);
 	public List<Map> getConsulta(HttpServletRequest request, HttpServletResponse response);
+	public String insertEmpleado(HttpServletRequest request, HttpServletResponse response);
+	public List<Empleado> getAllEmpleados();
+	public String deleteEmpleado(HttpServletRequest request, HttpServletResponse response);
+	public String updateEmpleado(HttpServletRequest request, HttpServletResponse response);
+	public Empleado getEmpleado(HttpServletRequest request, HttpServletResponse response);
 
 }
