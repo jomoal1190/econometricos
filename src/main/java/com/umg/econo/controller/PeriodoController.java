@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.umg.econo.model.Empleado;
@@ -40,6 +41,16 @@ public class PeriodoController {
 	{
 		return "/periodo/createPeriodo";
 	}
+	
+	
+	@RequestMapping(value="/periodo/eliminarPeriodo", method=RequestMethod.POST)
+	public @ResponseBody  String eliminarPeriodo(HttpServletRequest request, HttpServletResponse response,RedirectAttributes redirectAttributes)
+	{
+		String respuesta = servicioWeb.deletePeriodo(request, response);
+		return respuesta;
+	}
+	
+	
 	@RequestMapping(value = "/createPeriodo", method = RequestMethod.POST)
 	 public String agregarPeriodo(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) throws ParseException {
 		

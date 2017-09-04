@@ -41,13 +41,28 @@ public class Producto {
 	@JsonBackReference
 	@JoinColumn(name="id_proveedor")
 	private Proveedor proveedor;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy="producto")
+	@JsonManagedReference
+	Set<RegistrosAlterados> registrosAlterados = new HashSet<RegistrosAlterados>();
 	
 	
+	public Set<RegistrosAlterados> getRegistrosAlterados() {
+		return registrosAlterados;
+	}
+
+
+	public void setRegistrosAlterados(Set<RegistrosAlterados> registrosAlterados) {
+		this.registrosAlterados = registrosAlterados;
+	}
+
+
 	public Producto() {}
 	
 
+	
+
 	public Producto(Long id, String nombre, Double precio, Set<Registro> registros, Categoria categoria,
-			Proveedor proveedor) {
+			Proveedor proveedor, Set<RegistrosAlterados> registrosAlterados) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -55,6 +70,7 @@ public class Producto {
 		this.registros = registros;
 		this.categoria = categoria;
 		this.proveedor = proveedor;
+		this.registrosAlterados = registrosAlterados;
 	}
 
 

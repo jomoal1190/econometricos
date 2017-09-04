@@ -24,10 +24,12 @@ import com.umg.econo.model.Empleado;
 import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
+import com.umg.econo.model.RegistrosAlterados;
 import com.umg.econo.repository.EmpleadoRepository;
 import com.umg.econo.repository.PeriodoRepository;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.RegistroRepository;
+import com.umg.econo.repository.RegistrosAlteradosRepository;
 import com.umg.econo.service.ServiceWeb;
 @Service
 public class ServiceWebImpl implements ServiceWeb{
@@ -43,6 +45,7 @@ public class ServiceWebImpl implements ServiceWeb{
 	@Autowired private Utileria utileria;
 	@Autowired private EmpleadoRepository empleadoRepository;
 	@Autowired private PeriodoRepository periodoRepository;
+	@Autowired private RegistrosAlteradosRepository registrosAlteradosRepository;
 	
 	@Override
 	public RespuestaParametroDao<Registro> getAllRegistros(ObtenerParametroGenerico<Registro> registro) {
@@ -161,6 +164,8 @@ public class ServiceWebImpl implements ServiceWeb{
 		
 		return respuesta;
 	}
+	
+	
 	@Override
 	public List<Map> getConsulta(HttpServletRequest request, HttpServletResponse response) {
 		logger.info("opcion "+request.getParameter("opcion"));
@@ -329,6 +334,63 @@ public class ServiceWebImpl implements ServiceWeb{
 		}
 		
 		return respuesta;
+	}
+	@Override
+	public List<Registro> getAllRegistro() {
+		List<Registro> registros = registroRepository.findAll();
+		return registros;
+	}
+	@Override
+	public String deletePeriodo(HttpServletRequest request, HttpServletResponse response) {
+		String respuesta="";
+		Long id = Long.parseLong(request.getParameter("id"));
+		PeriodoDeAfecto periodo = new PeriodoDeAfecto();
+		periodo.setId(id);
+		try{
+			periodoRepository.delete(periodo);
+			respuesta=CODIGO_CORRECTO;
+		}catch(Exception e)
+		{
+			logger.error("Error al eliminar periodo ",e);
+			respuesta=CODIGO_INCORRECTO;
+		}
+		
+		return respuesta;
+	}
+	@Override
+	public void createRegistrosAlterados(List<RegistrosAlterados> registros) {
+		List<RegistrosAlterados> registrosExistentes = registrosAlteradosRepository.findAll();
+		
+		
+		
+		try{
+			if(registrosExistentes.size()>0)
+			{
+				registrosAlteradosRepository.deleteAll();
+				if(registros.size()>0)
+				{
+					for(RegistrosAlterados reg: registros)
+					{
+						registrosAlteradosRepository.save(reg);
+					}
+				}
+				logger.info("Registros guardados");
+			}
+			else
+			{
+				if(registros.size()>0)
+				{
+					for(RegistrosAlterados reg: registros)
+					{
+						registrosAlteradosRepository.save(reg);
+					}
+				}
+				logger.info("Registros guardados");
+			}
+		}catch(Exception e){
+			logger.info("Error en crear registros alterados");
+		}
+		
 	}
 	
 	

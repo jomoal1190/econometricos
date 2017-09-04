@@ -16,6 +16,7 @@ import com.umg.econo.model.Empleado;
 import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Registro;
+import com.umg.econo.model.RegistrosAlterados;
 
 
 public interface ServiceWeb {
@@ -33,5 +34,9 @@ public interface ServiceWeb {
 	public Empleado getEmpleado(HttpServletRequest request, HttpServletResponse response);
 	public List<PeriodoDeAfecto> getAllPeriodos();
 	public String createPeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException;
+	
+	public List<Registro> getAllRegistro();
+	public String deletePeriodo(HttpServletRequest request, HttpServletResponse response);
+	public void createRegistrosAlterados(List<RegistrosAlterados> registros);
 
 }

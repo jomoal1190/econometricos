@@ -258,7 +258,7 @@
      	function eliminar(id)
      	{
      		console.log(id);
-     		url="/empleado/eliminarEmpleado"
+     		url="/periodo/eliminarPeriodo"
      		 $.ajax({                        
 	    		    type: "POST",                 
 	    		    url: url,                     
@@ -267,8 +267,25 @@
 	    	           {
 	    		    	if (data=="001")
 	    		    		{
-	    		    		alert("Empleado eliminado");
-	    		    		document.location.href = '/empleado/listEmpleado'
+	    		    		var dialogExport = $("<div></div>").append('<p>Periodo eliminado</p>').dialog({
+	    		                modal: true,
+	    		                autoOpen: true,
+	    		                resizable: false,
+	    		                height: "auto",
+	    		                title: "Proceso Realizado",
+	    		                closeText: "Cerrar",
+	    		                close: function() {
+	    		                    $(this).remove();
+	    		                    document.location.href = '/periodo/listPeriodo'
+	    		                },
+	    		                buttons: {
+	    		                    Cerrar: function() {
+	    		                        $(this).dialog("close");
+	    		                        document.location.href = '/periodo/listPeriodo'
+	    		                    }
+	    		                }
+	    		            });
+	    		    		
 	    		    		}
 	    		    		
 	    	           }

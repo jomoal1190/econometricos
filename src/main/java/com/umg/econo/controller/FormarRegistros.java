@@ -29,9 +29,11 @@ import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
 import com.umg.econo.model.Categoria;
+import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Proveedor;
 import com.umg.econo.model.Registro;
+import com.umg.econo.model.RegistrosAlterados;
 import com.umg.econo.objetosCalculos.CalculoFuncionCuadratica;
 import com.umg.econo.objetosCalculos.CalculoMinimosCuadrados;
 import com.umg.econo.objetosCalculos.CalculoRegresionLineal;
@@ -123,6 +125,8 @@ public class FormarRegistros {
 		return proveedor;
 	}
 	
+	
+	
 	@RequestMapping(value = "/consultarInfo", method = RequestMethod.POST)
 	 public String consultarInfo(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
 		
@@ -135,6 +139,35 @@ public class FormarRegistros {
 		valorAnio = Integer.parseInt(anio.split("/")[0]);
 		
 		List<Map> respuesta=servicioWeb.getConsulta(request, response);
+		List<Registro> registros = servicioWeb.getAllRegistro();
+		logger.info("Cantida de registros "+registros.size());
+		List<PeriodoDeAfecto> periodos = servicioWeb.getAllPeriodos();
+		List<RegistrosAlterados> registrosAlterados = new ArrayList<RegistrosAlterados>();
+		for (Registro reg: registros)
+		{
+			RegistrosAlterados newRegistro = new RegistrosAlterados();
+			newRegistro.setFechaCreacion(reg.getFechaCreacion());
+			newRegistro.setProducto(reg.getProducto());
+			newRegistro.setId(reg.getId());
+			for (PeriodoDeAfecto per: periodos)
+			{
+				
+				if((reg.getFechaCreacion().after(per.getInicio()) && reg.getFechaCreacion().before(per.getFin())) 
+						|| (reg.getFechaCreacion().equals(per.getFin()) || reg.getFechaCreacion().equals(per.getInicio())))
+				{
+					Double cantidad = (double) ((per.getMonto()/100)*reg.getCantidad());
+					newRegistro.setCantidad(cantidad);
+					
+				}
+				else{
+					newRegistro.setCantidad(Double.parseDouble(reg.getCantidad().toString()));
+				}
+			}
+			registrosAlterados.add(newRegistro);
+		}
+		logger.info("Cantidad de registros a crear "+registrosAlterados.size());
+		servicioWeb.createRegistrosAlterados(registrosAlterados);
+		
 		
 		//---------------------------------------------------------------------------------------------
 		//---------------------------------------------------------------------------------------------
