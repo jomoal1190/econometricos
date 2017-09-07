@@ -9,5 +9,7 @@ import com.umg.econo.model.PeriodoDeAfecto;
 
 public interface PeriodoRepository extends CrudRepository<PeriodoDeAfecto, Long>{
 	List<PeriodoDeAfecto> findAll();
+	
+	PeriodoDeAfecto findById(Long id);
 
 }

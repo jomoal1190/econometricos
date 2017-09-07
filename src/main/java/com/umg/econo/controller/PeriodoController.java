@@ -66,4 +66,32 @@ public class PeriodoController {
 		return "redirect:/listPeriodo";
 		
 	}
+	@RequestMapping(value="/getPeriodo", method=RequestMethod.GET)
+	public @ResponseBody PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response)
+	{
+		PeriodoDeAfecto periodo = new PeriodoDeAfecto();
+		
+		periodo = servicioWeb.getPeriodoId(request, response);
+		
+		Float monto = periodo.getMonto();
+		if(monto>1)
+		{
+			monto = (monto-1)*100;
+		}
+		else
+		{
+			monto = (1-monto)*-100;
+		}
+		periodo.setMonto((float) Math.round(monto));
+		logger.info("Monto enviar update "+monto);
+		return periodo;
+	}
+	@RequestMapping(value="/updatePeriodo", method = RequestMethod.POST)
+	public String updatePeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException
+	{
+		String respuesta = servicioWeb.updatePeriodo(request, response);
+		return "redirect:/listPeriodo";
+		
+	}
+	
 }

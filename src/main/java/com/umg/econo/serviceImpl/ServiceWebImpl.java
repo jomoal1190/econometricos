@@ -317,6 +317,15 @@ public class ServiceWebImpl implements ServiceWeb{
 			Date inicio = formato.parse(request.getParameter("inicio"));
 			Date fin = formato.parse(request.getParameter("fin"));
 			Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+			logger.info("Monto inicial "+monto );
+			if(monto<0){
+				monto = 1+ monto/100;
+			}
+			else
+			{
+				monto =1-monto/100;
+			}
+			logger.info("Valor del monto "+monto);
 			
 			PeriodoDeAfecto periodo = new PeriodoDeAfecto();
 			periodo.setDescripcion(descripcion);
@@ -391,6 +400,49 @@ public class ServiceWebImpl implements ServiceWeb{
 			logger.info("Error en crear registros alterados");
 		}
 		
+	}
+	@Override
+	public PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response) {
+		Long id= Long.parseLong(request.getParameter("id"));
+		logger.info("ID DE periodo "+id);
+		PeriodoDeAfecto periodo = periodoRepository.findById(id);
+		
+		
+		return periodo;
+	}
+	@Override
+	public String updatePeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		Long id = Long.parseLong(request.getParameter("id"));
+		String descripcion = request.getParameter("descripcion");
+		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+		Date inicio = formato.parse(request.getParameter("inicio"));
+		Date fin = formato.parse(request.getParameter("fin"));
+		Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+		logger.info("Monto inicial "+monto );
+		if(monto<0){
+			monto = 1+ monto/100;
+		}
+		else
+		{
+			monto =1-monto/100;
+		}
+		logger.info("Valor del monto update"+monto);
+		String respuesta="";
+		try{
+			PeriodoDeAfecto newPeriodo = new PeriodoDeAfecto();
+			newPeriodo.setId(id);
+			newPeriodo.setDescripcion(descripcion);
+			newPeriodo.setInicio(inicio);
+			newPeriodo.setFin(fin);
+			newPeriodo.setMonto(monto);
+			respuesta = CODIGO_CORRECTO;
+			periodoRepository.save(newPeriodo);
+		}catch(Exception e)
+		{
+			respuesta = CODIGO_INCORRECTO;
+		}
+		
+		return respuesta;
 	}
 	
 	

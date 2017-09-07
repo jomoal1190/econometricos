@@ -38,5 +38,8 @@ public interface ServiceWeb {
 	public List<Registro> getAllRegistro();
 	public String deletePeriodo(HttpServletRequest request, HttpServletResponse response);
 	public void createRegistrosAlterados(List<RegistrosAlterados> registros);
+	public PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response);
+	public String updatePeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException;
+	
 
 }

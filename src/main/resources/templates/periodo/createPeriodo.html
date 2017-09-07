@@ -160,7 +160,7 @@
 			    	</tr>
 			    	<tr id="porcentajes">
 			    		<td   >
-			    		<span>Ingrese el porcentaje observado</span>
+			    		<span>Ingrese el valor del afecto en porcentaje + o -</span>
 			    		</td>
 			    		<td colspan="2">
 			    			<input type="text" name="porcentaje" id="porcentaje"/>
@@ -170,7 +170,7 @@
 			    	<tr>
 			    	<td></td>
 			    		<td style="text-align: right;">
-			    		<input class="btn waves-effect waves-light" type="button" value="Guardar" id="enviarEmpleado" />
+			    		<input class="btn waves-effect waves-light" type="button" value="Guardar" id="enviarPeriodo" />
 			    		</td>
 			    	</tr>
 			    </tbody>
@@ -196,7 +196,8 @@
        selectMonths: true, // Creates a dropdown to control month
        selectYears: 15, // Creates a dropdown of 15 years to control year,
        close: 'Cerrar',
-       closeOnSelect: false // Close upon selecting a date,
+       closeOnSelect: false, // Close upon selecting a date,
+       editable: false,
      });
      
      
@@ -214,7 +215,7 @@
         		 $("#porcentajes").css("display", "table-row");
         	 }
          });
-    	 $('#enviarEmpleado').click(function(){
+    	 $('#enviarPeriodo').click(function(){
     		 $("#formularioCreatePeriodo").submit();
  			}); 
     	 
