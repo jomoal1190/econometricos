@@ -115,7 +115,7 @@
           <a class="mdl-navigation__link" href="/periodo/listPeriodo"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">date_range</i>Agregar Periodo</a>
           <a class="mdl-navigation__link" href="/insertRegistros"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_box</i>Agregar Registro</a>
           <a class="mdl-navigation__link" href="/unploadExcel"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add_circle</i>Agregar Masivamente</a>
-          <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">input</i>Realizar Consultas</a>
+          <a class="mdl-navigation__link" href="/getRegistros"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">input</i>Realizar Consultas</a>
           <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">multiline_chart</i>Minimos Cuadrados</a>
           <a class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">show_chart</i>Dispersion</a>
 
@@ -210,7 +210,9 @@
 			    	</tr>
 			    	
 			    	<tr>
-			    	<td></td>
+			    	<td>
+			    	<input class="btn waves-effect waves-light" type="button" value="Cancelar" id="cancelarUpdatePeriodo" />
+			    	</td>
 			    		<td style="text-align: right;">
 			    		<input class="btn waves-effect waves-light" type="button" value="Actualizar" id="updatePeriodo" />
 			    		</td>
@@ -225,6 +227,12 @@
       
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
      <script th:inline="javascript">
+     
+     
+     
+     
+     
+     
      $('.datepicker').pickadate({
       	  monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       	  weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
@@ -257,12 +265,12 @@
     		 document.location.href = '/createPeriodo'
  			}); 
     	 
-    	 $('#cancelarUpdateEmpleado').click(function(){
+    	 $('#cancelarUpdatePeriodo').click(function(){
     		 dialog.dialog( "close" );
  			}); 
     	
     	 $('#updateEmpleado').click(function(){
-    		 $("#formularioUpdateEmpleado").submit();
+    		 $("#formularioUpdatePeriodo").submit();
  			}); 
     	 
     	 
@@ -315,12 +323,19 @@
 	    		    success: function(data)             
 	    	           {
 	    		    	
-	    		    	console.log(data);
+	    		    	var inicio = data.inicio;
+	    		    	var fin = data.fin;
+	    		    	var splitInicio = inicio.split("-");
+	    		    	inicio = splitInicio[2]+"/"+splitInicio[1]+"/"+splitInicio[0];
+	    		    	var splitFin = fin.split("-");
+	    		    	fin = splitFin[2]+"/"+splitFin[1]+"/"+splitFin[0];
+	    		    	  
+	    		    	
 	    		    	document.getElementById('descripcion').value= data.descripcion;
 	    		    	document.getElementById('id').value= data.id;
 	    		    	document.getElementById('porcentaje').value= data.monto;
-	    		    	document.getElementById('inicio').value= data.inicio;
-	    		    	document.getElementById('fin').value= data.fin;	
+	    		    	document.getElementById('inicio').value= inicio;
+	    		    	document.getElementById('fin').value= fin;	
 	    	           }
 	    		   });
      		

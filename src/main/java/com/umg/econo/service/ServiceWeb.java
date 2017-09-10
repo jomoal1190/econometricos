@@ -40,6 +40,6 @@ public interface ServiceWeb {
 	public void createRegistrosAlterados(List<RegistrosAlterados> registros);
 	public PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response);
 	public String updatePeriodo(HttpServletRequest request, HttpServletResponse response) throws ParseException;
-	
+	public List<Map> getConsultaPerido(HttpServletRequest request, HttpServletResponse response);
 
 }

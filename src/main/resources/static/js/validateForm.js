@@ -49,8 +49,7 @@ jQuery(function($){
 					});
 					
 					$.validator.addMethod("greaterStart", function (value, element, params) {
-						
-					    return this.optional(element) || $(element).pickadate("getDate") >= $(params).pickadate("getDate");
+					    return this.optional(element) || $(element).val() >= $(params).val();
 					});
 					
 					$.validator.addMethod("dateBCR", function ( value, element ) {
@@ -306,8 +305,6 @@ jQuery(function($){
 							},
 							porcentaje : {
 								required : true,
-								max: 99,
-								min: 1,
 							},
 						},
 						messages : {
@@ -323,8 +320,6 @@ jQuery(function($){
 							},
 							porcentaje : {
 								required : msgRequiredGeneric,
-								max: msgMaxlengthNumber,
-								min: msgMinlengthNumber,
 							},
 						},
 						errorPlacement: function (error, element) {
@@ -390,8 +385,7 @@ jQuery(function($){
 							},
 							porcentaje : {
 								required : true,
-								max: 99,
-								min: 1,
+							
 							},
 						},
 						messages : {
@@ -407,8 +401,6 @@ jQuery(function($){
 							},
 							porcentaje : {
 								required : msgRequiredGeneric,
-								max: msgMaxlengthNumber,
-								min: msgMinlengthNumber,
 							},
 						},
 						errorPlacement: function (error, element) {

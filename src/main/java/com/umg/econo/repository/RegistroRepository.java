@@ -17,10 +17,45 @@ public interface RegistroRepository extends CrudRepository<Registro, Long>{
 	@Query("from Registro r where r.fechaCreacion=(select min(reg.fechaCreacion) from Registro reg)")
 	List<Registro> findByRegistrosMinimo();
 	
+	
+	
 	@Query("from Registro r where r.fechaCreacion=(select max(reg.fechaCreacion) from Registro reg where reg.producto.id =?1)")
 	List<Registro> findByRegistrosMaxProducto(Long producto);
 	@Query("from Registro r where r.fechaCreacion=(select max(reg.fechaCreacion) from Registro reg)")
 	List<Registro> findByRegistrosMaximo();
+	
+	@Query("select new map(year(r.fechaCreacion) as anio, "+
+			"sum(case when (r.fechaCreacion between per.inicio and per.fin) and per.monto<1 then ((r.cantidad*p.precio)-((r.cantidad*p.precio)-(r.cantidad*per.monto*p.precio))) "+
+			"when (r.fechaCreacion between per.inicio and per.fin) and per.monto>1 then ((r.cantidad*p.precio*per.monto)+((r.cantidad*p.precio*per.monto)-(r.cantidad*p.precio)))"+
+			"else (r.cantidad*p.precio) end) as total,  sum(r.cantidad) as suma)"+ 
+			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
+			"where year(r.fechaCreacion)=year(r.fechaCreacion) group by year(r.fechaCreacion) order by year(r.fechaCreacion) asc")
+	List<Map> parametrosAllPeriodo();
+	
+	@Query("select new map(month(r.fechaCreacion) as mes, "+
+			"sum(case when (r.fechaCreacion between per.inicio and per.fin) and per.monto<1 then ((r.cantidad*p.precio)-((r.cantidad*p.precio)-(r.cantidad*per.monto*p.precio))) "+
+			"when (r.fechaCreacion between per.inicio and per.fin) and per.monto>1 then ((r.cantidad*p.precio*per.monto)+((r.cantidad*p.precio*per.monto)-(r.cantidad*p.precio)))"+
+			"else (r.cantidad*p.precio) end) as total,  sum(r.cantidad) as suma)"+ 
+			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
+			"where year(r.fechaCreacion)=year(r.fechaCreacion) group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc")
+	List<Map> parametrosAllPeriodoActual();
+	
+	@Query("select new map(year(r.fechaCreacion) as anio, "+
+			"sum(case when (r.fechaCreacion between per.inicio and per.fin) and per.monto<1 then ((r.cantidad*p.precio)-((r.cantidad*p.precio)-(r.cantidad*per.monto*p.precio))) "+
+			"when (r.fechaCreacion between per.inicio and per.fin) and per.monto>1 then ((r.cantidad*p.precio*per.monto)+((r.cantidad*p.precio*per.monto)-(r.cantidad*p.precio)))"+
+			"else (r.cantidad*p.precio) end) as total,  sum(r.cantidad) as suma)"+ 
+			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
+			"where year(r.fechaCreacion)=year(r.fechaCreacion) and p.id=?1 group by year(r.fechaCreacion) order by year(r.fechaCreacion) asc")
+	List<Map> parametrosAllPeriodoParametro(Long producto);
+	
+	
+	@Query("select new map(month(r.fechaCreacion) as mes, "+
+			"sum(case when (r.fechaCreacion between per.inicio and per.fin) and per.monto<1 then ((r.cantidad*p.precio)-((r.cantidad*p.precio)-(r.cantidad*per.monto*p.precio))) "+
+			"when (r.fechaCreacion between per.inicio and per.fin) and per.monto>1 then ((r.cantidad*p.precio*per.monto)+((r.cantidad*p.precio*per.monto)-(r.cantidad*p.precio)))"+
+			"else (r.cantidad*p.precio) end) as total,  sum(r.cantidad) as suma)"+ 
+			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
+			"where year(r.fechaCreacion)=year(r.fechaCreacion) and p.id=?1 group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc")
+	List<Map> parametrosPeriodoParametroActual(Long producto);
 	
 	@Query("select new map(year(r.fechaCreacion) as anio, sum(r.cantidad) as suma, sum(r.cantidad*p.precio) as total) from Registro r  inner join r.producto as p "
 			+ "where year(r.fechaCreacion)=year(r.fechaCreacion) group by year(r.fechaCreacion) order by year(r.fechaCreacion) asc") 

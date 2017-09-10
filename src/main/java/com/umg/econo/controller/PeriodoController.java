@@ -1,6 +1,8 @@
 package com.umg.econo.controller;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +33,9 @@ public class PeriodoController {
 	@RequestMapping(value= {"/periodo/listPeriodo", "listPeriodo"}, method=RequestMethod.GET)
 	public String getAllPeriodos(Model model)
 	{
-		List<PeriodoDeAfecto> empleados = servicioWeb.getAllPeriodos();
-		model.addAttribute("periodo",empleados);
+		List<PeriodoDeAfecto> periodo = servicioWeb.getAllPeriodos();
+		
+		model.addAttribute("periodo",periodo);
 		return "/periodo/listPeriodo";
 	}
 
@@ -67,14 +70,14 @@ public class PeriodoController {
 		
 	}
 	@RequestMapping(value="/getPeriodo", method=RequestMethod.GET)
-	public @ResponseBody PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response)
+	public @ResponseBody PeriodoDeAfecto getPeriodoId(HttpServletRequest request, HttpServletResponse response) throws ParseException
 	{
 		PeriodoDeAfecto periodo = new PeriodoDeAfecto();
 		
 		periodo = servicioWeb.getPeriodoId(request, response);
 		
 		Float monto = periodo.getMonto();
-		if(monto>1)
+		if(monto<1)
 		{
 			monto = (monto-1)*100;
 		}
@@ -82,6 +85,8 @@ public class PeriodoController {
 		{
 			monto = (1-monto)*-100;
 		}
+		
+		
 		periodo.setMonto((float) Math.round(monto));
 		logger.info("Monto enviar update "+monto);
 		return periodo;

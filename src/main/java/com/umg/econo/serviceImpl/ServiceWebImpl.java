@@ -166,6 +166,8 @@ public class ServiceWebImpl implements ServiceWeb{
 	}
 	
 	
+	
+	
 	@Override
 	public List<Map> getConsulta(HttpServletRequest request, HttpServletResponse response) {
 		logger.info("opcion "+request.getParameter("opcion"));
@@ -213,6 +215,59 @@ public class ServiceWebImpl implements ServiceWeb{
 		
 		return respuesta;
 	}
+	
+	
+
+	
+	@Override
+	public List<Map> getConsultaPerido(HttpServletRequest request, HttpServletResponse response) {
+		logger.info("opcion "+request.getParameter("opcion"));
+
+		String opcion = request.getParameter("opcion");
+		Long producto = null;
+		if (!request.getParameter("producto").equals(""))
+		{
+			producto = Long.parseLong(request.getParameter("producto"));
+		}
+		String anio = request.getParameter("anio");
+		String mes = request.getParameter("mes");
+		Integer metodo = Integer.getInteger(request.getParameter("metodo"));
+		
+		List<Map> respuesta= null;
+		//VALIDACIONES SEGUN PARAMETROS
+		//SI ENVIA PRODUCTO
+		
+		if(producto != null)
+		{
+			
+			if(mes != null && mes.equals("on") )
+			{
+				respuesta = registroRepository.parametrosPeriodoParametroActual(producto);
+			}else {
+				respuesta = registroRepository.parametrosAllPeriodoParametro(producto);
+			}
+			
+			
+		}
+		else{
+			
+			if(mes != null && mes.equals("on")) {
+				respuesta = registroRepository.parametrosAllPeriodoActual();
+				
+			}
+			else {
+				respuesta = registroRepository.parametrosAllPeriodo();
+				
+			}
+			
+		}
+		
+		logger.info("Recibio registros "+respuesta.size());
+		
+		return respuesta;
+	}
+
+	
 	@Override
 	public String insertEmpleado(HttpServletRequest request, HttpServletResponse response) {
 		 String nombre = request.getParameter("nombre");
@@ -318,12 +373,12 @@ public class ServiceWebImpl implements ServiceWeb{
 			Date fin = formato.parse(request.getParameter("fin"));
 			Float monto = Float.parseFloat(request.getParameter("porcentaje"));
 			logger.info("Monto inicial "+monto );
-			if(monto<0){
+			if(monto>0){
 				monto = 1+ monto/100;
 			}
 			else
 			{
-				monto =1-monto/100;
+				monto =1+monto/100;
 			}
 			logger.info("Valor del monto "+monto);
 			
@@ -370,10 +425,10 @@ public class ServiceWebImpl implements ServiceWeb{
 	public void createRegistrosAlterados(List<RegistrosAlterados> registros) {
 		List<RegistrosAlterados> registrosExistentes = registrosAlteradosRepository.findAll();
 		
-		
+		logger.info("Registros a guardar "+registros.size());
 		
 		try{
-			if(registrosExistentes.size()>0)
+			if(registrosExistentes.size()>0 && registrosExistentes.isEmpty())
 			{
 				registrosAlteradosRepository.deleteAll();
 				if(registros.size()>0)
@@ -419,12 +474,14 @@ public class ServiceWebImpl implements ServiceWeb{
 		Date fin = formato.parse(request.getParameter("fin"));
 		Float monto = Float.parseFloat(request.getParameter("porcentaje"));
 		logger.info("Monto inicial "+monto );
-		if(monto<0){
+		if(monto>0){
+			
 			monto = 1+ monto/100;
 		}
 		else
 		{
-			monto =1-monto/100;
+			logger.info("negaivo");
+			monto= 1+(monto/100);
 		}
 		logger.info("Valor del monto update"+monto);
 		String respuesta="";

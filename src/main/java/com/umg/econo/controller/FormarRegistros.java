@@ -137,36 +137,17 @@ public class FormarRegistros {
 		List<Registro> RegistroMaximo = repositoryRegistro.findByRegistrosMaximo();
 		anio = formato.format(RegistroMaximo.get(0).getFechaCreacion());
 		valorAnio = Integer.parseInt(anio.split("/")[0]);
-		
-		List<Map> respuesta=servicioWeb.getConsulta(request, response);
-		List<Registro> registros = servicioWeb.getAllRegistro();
-		logger.info("Cantida de registros "+registros.size());
-		List<PeriodoDeAfecto> periodos = servicioWeb.getAllPeriodos();
-		List<RegistrosAlterados> registrosAlterados = new ArrayList<RegistrosAlterados>();
-		for (Registro reg: registros)
+		List<PeriodoDeAfecto> periodo = servicioWeb.getAllPeriodos();
+		List<Map> respuesta = new ArrayList<Map>();
+		if(periodo.isEmpty())
 		{
-			RegistrosAlterados newRegistro = new RegistrosAlterados();
-			newRegistro.setFechaCreacion(reg.getFechaCreacion());
-			newRegistro.setProducto(reg.getProducto());
-			newRegistro.setId(reg.getId());
-			for (PeriodoDeAfecto per: periodos)
-			{
-				
-				if((reg.getFechaCreacion().after(per.getInicio()) && reg.getFechaCreacion().before(per.getFin())) 
-						|| (reg.getFechaCreacion().equals(per.getFin()) || reg.getFechaCreacion().equals(per.getInicio())))
-				{
-					Double cantidad = (double) ((per.getMonto()/100)*reg.getCantidad());
-					newRegistro.setCantidad(cantidad);
-					
-				}
-				else{
-					newRegistro.setCantidad(Double.parseDouble(reg.getCantidad().toString()));
-				}
-			}
-			registrosAlterados.add(newRegistro);
+			respuesta=servicioWeb.getConsulta(request, response);
 		}
-		logger.info("Cantidad de registros a crear "+registrosAlterados.size());
-		servicioWeb.createRegistrosAlterados(registrosAlterados);
+		else {
+			respuesta=servicioWeb.getConsultaPerido(request, response);
+		}
+		
+		
 		
 		
 		//---------------------------------------------------------------------------------------------
