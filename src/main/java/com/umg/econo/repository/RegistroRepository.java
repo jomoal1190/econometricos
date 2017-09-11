@@ -37,7 +37,7 @@ public interface RegistroRepository extends CrudRepository<Registro, Long>{
 			"when (r.fechaCreacion between per.inicio and per.fin) and per.monto>1 then ((r.cantidad*p.precio*per.monto)+((r.cantidad*p.precio*per.monto)-(r.cantidad*p.precio)))"+
 			"else (r.cantidad*p.precio) end) as total,  sum(r.cantidad) as suma)"+ 
 			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
-			"where year(r.fechaCreacion)=year(r.fechaCreacion) group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc")
+			"where year(r.fechaCreacion)=year(curdate()) group by month(r.fechaCreacion) order by month(r.fechaCreacion) asc")
 	List<Map> parametrosAllPeriodoActual();
 	
 	@Query("select new map(year(r.fechaCreacion) as anio, "+
@@ -47,6 +47,8 @@ public interface RegistroRepository extends CrudRepository<Registro, Long>{
 			"from PeriodoDeAfecto per, Registro r  inner join r.producto as p "+
 			"where year(r.fechaCreacion)=year(r.fechaCreacion) and p.id=?1 group by year(r.fechaCreacion) order by year(r.fechaCreacion) asc")
 	List<Map> parametrosAllPeriodoParametro(Long producto);
+	
+	
 	
 	
 	@Query("select new map(month(r.fechaCreacion) as mes, "+

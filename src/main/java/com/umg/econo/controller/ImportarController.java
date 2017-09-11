@@ -30,10 +30,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.model.Categoria;
+import com.umg.econo.model.Empleado;
 import com.umg.econo.model.Producto;
 import com.umg.econo.model.Proveedor;
 import com.umg.econo.model.Registro;
 import com.umg.econo.repository.CategoriaRepository;
+import com.umg.econo.repository.EmpleadoRepository;
 import com.umg.econo.repository.ProductosRepository;
 import com.umg.econo.repository.ProveedoresRepository;
 import com.umg.econo.service.ServiceWeb;
@@ -52,6 +54,7 @@ public class ImportarController {
 	@Autowired ProductosRepository productoRepository;
 	@Autowired CategoriaRepository categoriaRepository;
 	@Autowired ProveedoresRepository proveedorRepository;
+	@Autowired EmpleadoRepository empleadoRepository;
 	
 	
 	@PostMapping("/unploadExcel") 
@@ -180,7 +183,12 @@ public class ImportarController {
         	             			Producto producto = productoRepository.findOne((long) cell.getNumericCellValue());
         	             			registro.setProducto(producto);
         	             		}
-        	             		
+        	             		else if(numeroCelda==3)
+        	             		{
+        	             			Empleado empleado = empleadoRepository.findById((long) cell.getNumericCellValue());
+        	             			registro.setEmpleado(empleado);
+        	             			
+        	             		}
         	             		 if(!lista.contains(registro)) {
         	                    	 lista.add(registro);
         	                    }
