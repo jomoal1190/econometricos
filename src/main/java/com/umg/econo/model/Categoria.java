@@ -3,6 +3,7 @@ package com.umg.econo.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,16 +30,34 @@ public class Categoria {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy="categoria")
 	@JsonManagedReference
 	Set<Producto> producto = new HashSet<Producto>();
+	@OneToMany(fetch = FetchType.EAGER, mappedBy="categoria", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	Set<PeriodoDeAfecto> periodo = new HashSet<PeriodoDeAfecto>();
+	
 	
 	public Categoria() {
 	}
 	
-	public Categoria(Long id, String descripcion, Set<Producto> producto) {
+	
+	public Categoria(Long id, String descripcion, Set<Producto> producto, Set<PeriodoDeAfecto> periodo) {
 		super();
 		this.id = id;
 		this.descripcion = descripcion;
 		this.producto = producto;
+		this.periodo = periodo;
 	}
+
+
+	public Set<PeriodoDeAfecto> getPeriodo() {
+		return periodo;
+	}
+
+
+	public void setPeriodo(Set<PeriodoDeAfecto> periodo) {
+		this.periodo = periodo;
+	}
+
+
 	public Long getId() {
 		return id;
 	}

@@ -2,6 +2,7 @@ package com.umg.econo.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.umg.econo.model.Categoria;
 import com.umg.econo.model.Empleado;
 import com.umg.econo.model.PeriodoDeAfecto;
+import com.umg.econo.repository.CategoriaRepository;
 import com.umg.econo.service.ServiceWeb;
 
 @Controller
@@ -27,6 +30,7 @@ public class PeriodoController {
 	
 	private static Logger logger = LoggerFactory.getLogger(PeriodoController.class);
 	@Autowired ServiceWeb servicioWeb;
+	@Autowired CategoriaRepository categoriaRepository;
 	private static final String CODIGO_CORRECTO = "001";
 	private static final String CODIGO_INCORRECTO= "000";
 	
@@ -34,7 +38,9 @@ public class PeriodoController {
 	public String getAllPeriodos(Model model)
 	{
 		List<PeriodoDeAfecto> periodo = servicioWeb.getAllPeriodos();
-		
+		List<Categoria> categoria = new ArrayList<Categoria>();
+		categoria = categoriaRepository.findAll();
+		model.addAttribute("categoria", categoria);
 		model.addAttribute("periodo",periodo);
 		return "/periodo/listPeriodo";
 	}
@@ -42,6 +48,9 @@ public class PeriodoController {
 	@RequestMapping(value="/createPeriodo", method=RequestMethod.GET)
 	public String insertarPeriodo(Model model)
 	{
+		List<Categoria> categoria = new ArrayList<Categoria>();
+		categoria = categoriaRepository.findAll();
+		model.addAttribute("categoria", categoria);
 		return "/periodo/createPeriodo";
 	}
 	
@@ -85,8 +94,7 @@ public class PeriodoController {
 		{
 			monto = (1-monto)*-100;
 		}
-		
-		
+		logger.info("Periodo cAtegoria "+periodo.getCategoria());
 		periodo.setMonto((float) Math.round(monto));
 		logger.info("Monto enviar update "+monto);
 		return periodo;

@@ -138,6 +138,7 @@
 			    <th>Descripción</th>
 			    <th>Inicio</th>
 			    <th>Fin</th>
+			    <th>Categoria</th>
 			    <th>Porcentaje</th>
 			    <th>Actualizar</th>
 			    <th>Eliminar</th>
@@ -148,9 +149,10 @@
 				   <td th:text="${per.descripcion}"></td>
 				   <td th:text="${per.inicio}"></td>
 				    <td th:text="${per.fin}"></td>
+				    <td th:text="${per.categoria.descripcion}"></td>
 				   <td th:text="${per.monto}"></td>
 				   <td>
-				   <button class="btn waves-effect waves-light" th:id="${per.id}" th:onclick="'update(\'' + ${per.id}+ '\')'"><i class="material-icons left">create</i>Editar</button>
+				   <button class="btn waves-effect waves-light" th:id="${per.id}" th:onclick="'update(\'' + ${per.id}+ '\',\''+${per.categoria.id}+'\')'"><i class="material-icons left">create</i>Editar</button>
 				   </td>
 				   <td>
 				   <button class="btn waves-effect waves-light" id="eliminar"  th:onclick="'eliminar(\'' + ${per.id}+ '\')'"><i class="material-icons left">clear</i>Eliminar</button>
@@ -199,6 +201,17 @@
 			    		<input type="text" name="fin" class="datepicker" id="fin"/>
 			    		</td>
 			    		
+			    	</tr>
+			    	<tr id="categorias">
+			    		<td>
+			    		<span>Seleccione una categoria de productos</span>
+			    		</td>
+			    		<td colspan="2">
+			    			<select  style="display: block;"  name="categoria" id="categoria">
+			    			<option value="">Seleccionar...</option>
+						    <option th:each="cate : ${categoria}" th:value="${cate.id}" th:text="${cate.descripcion}"></option>
+						    </select>
+			    		</td>
 			    	</tr>
 			    	<tr id="porcentajes">
 			    		<td   >
@@ -250,7 +263,7 @@
      var dialog;
      dialog = $( "#modal" ).dialog({
 	        autoOpen: false,
-	        height: 580,
+	        height: 640,
 	        width: 550,
 	        modal: true,
 	       
@@ -312,7 +325,7 @@
 	    	           }
 	    		   });
      	}
-     	function update(id)
+     	function update(id,categoria)
      	{
      		console.log(id);
      		dialog.dialog("open");
@@ -329,13 +342,13 @@
 	    		    	inicio = splitInicio[2]+"/"+splitInicio[1]+"/"+splitInicio[0];
 	    		    	var splitFin = fin.split("-");
 	    		    	fin = splitFin[2]+"/"+splitFin[1]+"/"+splitFin[0];
-	    		    	  
-	    		    	
+	    		    	console.log(categoria);
 	    		    	document.getElementById('descripcion').value= data.descripcion;
 	    		    	document.getElementById('id').value= data.id;
 	    		    	document.getElementById('porcentaje').value= data.monto;
 	    		    	document.getElementById('inicio').value= inicio;
-	    		    	document.getElementById('fin').value= fin;	
+	    		    	document.getElementById('fin').value= fin;
+	    		    	document.getElementById('categoria').value=categoria;
 	    	           }
 	    		   });
      		

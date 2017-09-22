@@ -158,6 +158,17 @@
 			    		</td>
 			    		
 			    	</tr>
+			    	<tr id="categorias">
+			    		<td>
+			    		<span>Seleccione una categoria de productos</span>
+			    		</td>
+			    		<td colspan="2">
+			    			<select  style="display: block;"  name="categoria" id="categoria">
+			    			<option value="">Seleccionar...</option>
+						    <option th:each="cate : ${categoria}" th:value="${cate.id}" th:text="${cate.descripcion}"></option>
+						    </select>
+			    		</td>
+			    	</tr>
 			    	<tr id="porcentajes">
 			    		<td   >
 			    		<span>Ingrese el valor del afecto en porcentaje + o -</span>

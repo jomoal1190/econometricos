@@ -5,8 +5,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +34,7 @@ import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
+import com.umg.econo.dao.ResumirSumas;
 import com.umg.econo.model.Categoria;
 import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
@@ -129,8 +136,14 @@ public class FormarRegistros {
 	
 	@RequestMapping(value = "/consultarInfo", method = RequestMethod.POST)
 	 public String consultarInfo(HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+		Float error=(float) 0.0;
+		if(!request.getParameter("error").isEmpty())
+		{
+			error = Float.parseFloat(request.getParameter("error"));
+			
+		}
 		
-		logger.info("PARAMETROS "+request.getParameter("opcion"));
+		logger.info("Valor del error "+error);
 		SimpleDateFormat formato = new SimpleDateFormat("yyyy/MM/dd");
 		String anio = null;
 		Integer valorAnio = null;
@@ -139,14 +152,77 @@ public class FormarRegistros {
 		valorAnio = Integer.parseInt(anio.split("/")[0]);
 		List<PeriodoDeAfecto> periodo = servicioWeb.getAllPeriodos();
 		List<Map> respuesta = new ArrayList<Map>();
+		Map<Integer,Float> respuestaAgrupada = new HashMap<>();
 		if(periodo.isEmpty())
 		{
 			respuesta=servicioWeb.getConsulta(request, response);
 		}
 		else {
 			respuesta=servicioWeb.getConsultaPerido(request, response);
+			if(request.getParameter("anio")!=null)
+			{
+				for(Map mapa: respuesta)
+				{
+					for(PeriodoDeAfecto per: periodo)
+					{
+						Date fechaS =  (Date) mapa.get("fecha");
+						if(!fechaS.before(per.getInicio()) && !fechaS.after(per.getFin()))
+						{
+							
+							Float total = Float.parseFloat(mapa.get("total").toString()) ;
+							total=total-((total)-(total*per.getMonto()));
+							mapa.replace("total", total);
+						}
+						
+					}		
+				}
+			}
+			else
+			{
+				for(Map mapa: respuesta)
+				{
+					for(PeriodoDeAfecto per: periodo)
+					{
+						Date fechaS =  (Date) mapa.get("fecha");
+						if(!fechaS.before(per.getInicio()) && !fechaS.after(per.getFin()))
+						{
+							
+							Float total = Float.parseFloat(mapa.get("total").toString()) ;
+							total=total-((total)-(total*per.getMonto()));
+							mapa.replace("total", total);
+						}
+						
+					}		
+				}
+			}
+			
+			
 		}
 		
+		if(request.getParameter("anio")!=null)
+		{
+			respuestaAgrupada =unificarAnios(respuesta);
+			respuesta.clear();
+			for(Entry<Integer, Float> sum: respuestaAgrupada.entrySet())
+			{
+				Map<String, String> agregar = new HashMap<String, String>();
+				agregar.put("anio", sum.getKey().toString());
+				agregar.put("total", sum.getValue().toString());
+				respuesta.add(agregar);				
+			}
+		
+		}
+		else {
+			respuestaAgrupada = unificarMes(respuesta);
+			respuesta.clear();
+			for(Entry<Integer,Float> sum: respuestaAgrupada.entrySet())
+			{
+				Map<String, String> agregar = new HashMap<String, String>();
+				agregar.put("mes", sum.getKey().toString());
+				agregar.put("total", sum.getValue().toString());
+				respuesta.add(agregar);
+			}
+		}
 		
 		
 		
@@ -180,10 +256,8 @@ public class FormarRegistros {
 					{
 						Integer anioR = Integer.parseInt(mapa.get("anio").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
-						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(anioR.toString());
-						agregar.setSuma(Math.round(suma));
 						agregar.setTotal((float)Math.round(total));
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -248,10 +322,8 @@ public class FormarRegistros {
 					{
 						Float mes = Float.parseFloat(mapa.get("mes").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
-						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(utileria.cambioMesNumero(mes.intValue()));
-						agregar.setSuma(Math.round(suma));
 						agregar.setTotal((float)Math.round(total));
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -339,7 +411,6 @@ public class FormarRegistros {
 						Float total =Float.parseFloat(mapa.get("total").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(anioM.toString());
-						agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
 						agregar.setTotal((float)Math.round(total));
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -401,8 +472,8 @@ public class FormarRegistros {
 						Float mes=Float.parseFloat(mapa.get("mes").toString());
 						Float total =Float.parseFloat(mapa.get("total").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
-						agregar.setAnio(utileria.cambioMesNumero(mapa.get("mes").hashCode()));
-						agregar.setSuma(Integer.parseInt(mapa.get("suma").toString()));
+						logger.info("Mes "+mapa.get("mes"));
+						agregar.setAnio(utileria.cambioMesNumero(mes.intValue()));
 						agregar.setTotal((float) Math.round(total));
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -472,10 +543,8 @@ public class FormarRegistros {
 					{
 						Integer anioR = Integer.parseInt(mapa.get("anio").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
-						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(anioR.toString());
-						agregar.setSuma(suma);
 						agregar.setTotal(total);
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -541,10 +610,8 @@ public class FormarRegistros {
 					{
 						Float mes = Float.parseFloat(mapa.get("mes").toString());
 						Float total = Float.parseFloat(mapa.get("total").toString());
-						Integer suma = Integer.parseInt(mapa.get("suma").toString());
 						RespuestaBDanio agregar = new RespuestaBDanio();
 						agregar.setAnio(utileria.cambioMesNumero(mes.intValue()));
-						agregar.setSuma(suma);
 						agregar.setTotal(total);
 						respuestabdProyeccion.add(agregar);
 						respuestabd.add(agregar);
@@ -738,5 +805,47 @@ public class FormarRegistros {
 		
 		return respuesta;
 	}
+	public TreeMap<Integer,Float> unificarAnios(List<Map> mapa)
+	{
+		TreeMap<Integer,Float> sumas = new TreeMap<Integer,Float>();
+		for(Map map: mapa)
+		{
+			if(sumas.containsKey(map.get("anio")))
+			{	
+				Float total = sumas.get(map.get("anio"));
+				logger.info("total "+total);
+				total= total+Float.parseFloat(map.get("total").toString());
+				sumas.replace(Integer.parseInt(map.get("anio").toString()), total);
+			}
+			else {
+				sumas.put(Integer.parseInt(map.get("anio").toString()),Float.parseFloat(map.get("total").toString()));
+				logger.info("Valor "+sumas.size());
+			}	
+		}
+		
+		return sumas;
+	}
+	public TreeMap<Integer,Float> unificarMes(List<Map> mapa)
+	{
+		
+		TreeMap<Integer,Float> sumas = new TreeMap<Integer,Float>();
+		for(Map map: mapa)
+		{
+			if(sumas.containsKey(map.get("mes")))
+			{	
+				Float total = sumas.get(map.get("mes"));
+				logger.info("total "+total);
+				total= total+Float.parseFloat(map.get("total").toString());
+				sumas.replace(Integer.parseInt(map.get("mes").toString()), total);
+			}
+			else {
+				sumas.put(Integer.parseInt(map.get("mes").toString()),Float.parseFloat(map.get("total").toString()));
+				logger.info("Valor "+sumas.size());
+			}	
+		}
+		
+		return sumas;
+	}
+	
 	
 }

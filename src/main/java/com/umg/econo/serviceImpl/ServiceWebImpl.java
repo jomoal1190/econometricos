@@ -20,6 +20,7 @@ import com.umg.econo.dao.ObtenerParametroGenerico;
 import com.umg.econo.dao.RespuestaBDanio;
 import com.umg.econo.dao.RespuestaGeneralDao;
 import com.umg.econo.dao.RespuestaParametroDao;
+import com.umg.econo.model.Categoria;
 import com.umg.econo.model.Empleado;
 import com.umg.econo.model.PeriodoDeAfecto;
 import com.umg.econo.model.Producto;
@@ -257,7 +258,6 @@ public class ServiceWebImpl implements ServiceWeb{
 			}
 			else {
 				respuesta = registroRepository.parametrosAllPeriodo();
-				
 			}
 			
 		}
@@ -372,6 +372,8 @@ public class ServiceWebImpl implements ServiceWeb{
 			Date inicio = formato.parse(request.getParameter("inicio"));
 			Date fin = formato.parse(request.getParameter("fin"));
 			Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+			Categoria categoria = new Categoria();
+			categoria.setId(Long.parseLong(request.getParameter("categoria")));
 			logger.info("Monto inicial "+monto );
 			if(monto>0){
 				monto = 1+ monto/100;
@@ -387,6 +389,7 @@ public class ServiceWebImpl implements ServiceWeb{
 			periodo.setInicio(inicio);
 			periodo.setFin(fin);
 			periodo.setMonto(monto);
+			periodo.setCategoria(categoria);
 			
 			periodoRepository.save(periodo);
 			respuesta = CODIGO_CORRECTO;
@@ -473,6 +476,8 @@ public class ServiceWebImpl implements ServiceWeb{
 		Date inicio = formato.parse(request.getParameter("inicio"));
 		Date fin = formato.parse(request.getParameter("fin"));
 		Float monto = Float.parseFloat(request.getParameter("porcentaje"));
+		Categoria categoria = new Categoria();
+		categoria.setId(Long.parseLong(request.getParameter("categoria")));
 		logger.info("Monto inicial "+monto );
 		if(monto>0){
 			
@@ -492,6 +497,7 @@ public class ServiceWebImpl implements ServiceWeb{
 			newPeriodo.setInicio(inicio);
 			newPeriodo.setFin(fin);
 			newPeriodo.setMonto(monto);
+			newPeriodo.setCategoria(categoria);
 			respuesta = CODIGO_CORRECTO;
 			periodoRepository.save(newPeriodo);
 		}catch(Exception e)

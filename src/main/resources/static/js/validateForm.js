@@ -299,6 +299,10 @@ jQuery(function($){
 							inicio : {
 								required : true,
 								},
+							categoria : {
+								required : true,
+									},
+
 							fin : {
 								required : true,
 								greaterStart: '#inicio'
@@ -314,6 +318,9 @@ jQuery(function($){
 							inicio : {
 								required : msgRequiredGeneric,
 								},
+								categoria : {
+									required : msgRequiredGeneric,
+									},
 							fin : {
 								required : msgRequiredGeneric,
 								greaterStart: msgFecha
@@ -383,6 +390,9 @@ jQuery(function($){
 								required : true,
 								greaterStart: '#inicio'
 							},
+							categoria:{
+								required: true,
+							},
 							porcentaje : {
 								required : true,
 							
@@ -394,6 +404,9 @@ jQuery(function($){
 							},
 							inicio : {
 								required : msgRequiredGeneric,
+								},
+								categoria:{
+									required: msgRequiredGeneric,
 								},
 							fin : {
 								required : msgRequiredGeneric,
